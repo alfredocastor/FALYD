@@ -12,6 +12,10 @@
         <servlet-name>MaestroServlet</servlet-name>
         <servlet-class>com.falyd.controlador.MaestroServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GrupoServlet</servlet-name>
+        <servlet-class>com.falyd.controlador.GrupoServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AlumnoServlet</servlet-name>
         <url-pattern>/AlumnoServlet</url-pattern>
@@ -23,6 +27,10 @@
     <servlet-mapping>
         <servlet-name>MaestroServlet</servlet-name>
         <url-pattern>/MaestroServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GrupoServlet</servlet-name>
+        <url-pattern>/GrupoServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

@@ -18,36 +18,27 @@ import java.util.List;
  */
 public class MaestroDAO {
     public List<Maestro> listarMaestros() {
-        List<Maestro> lista = new ArrayList<>();
-        Connection con = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        // Unimos MAESTRO y USUARIO para obtener el nombre real
-        String sql = "SELECT m.id_maestro, u.nombre FROM MAESTRO m INNER JOIN USUARIO u ON m.id_usuario = u.id_usuario";
-
-        try {
-            con = Conexion.getConexion();
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Maestro prof = new Maestro();
-                prof.setId_maestro(rs.getInt("id_maestro"));
-                prof.setNombre(rs.getString("nombre"));
-                lista.add(prof);
-            }
-        } catch (Exception e) {
-            System.out.println("Error al listar maestros: " + e.getMessage());
-        } finally {
-            try {
-                if(rs != null) rs.close();
-                if(ps != null) ps.close();
-                if(con != null) con.close();
-            } catch (Exception e) {}
+    List<Maestro> lista = new ArrayList<>();
+    String sql = "SELECT m.id_maestro, m.id_usuario, u.nombre, u.correo " + 
+             "FROM MAESTRO m " +
+             "JOIN USUARIO u ON m.id_usuario = u.id_usuario";
+    try (Connection con = Conexion.getConexion();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        
+        while (rs.next()) {
+            Maestro m = new Maestro();
+            m.setId_maestro(rs.getInt("id_maestro"));
+            m.setId_usuario(rs.getInt("id_usuario"));
+            m.setNombre(rs.getString("nombre"));
+            m.setCorreo(rs.getString("correo")); // Guardamos el correo
+            lista.add(m);
         }
-        return lista;
+    } catch (Exception e) {
+        System.out.println("Error al listar maestros: " + e.getMessage());
     }
+    return lista;
+}
     // Método para registrar un maestro en las tablas USUARIO y MAESTRO
     public boolean registrarMaestro(String nombre, String correo, String password) {
         boolean registrado = false;
@@ -104,6 +95,72 @@ public class MaestroDAO {
         }
         
         return registrado;
+    }
+    // Método para EDITAR un maestro
+    public boolean editarMaestro(int id_usuario, int id_maestro, String nombre, String correo, String password) {
+        boolean editado = false;
+        Connection con = null;
+        PreparedStatement psUsuario = null;
+
+        try {
+            con = Conexion.getConexion();
+            // Actualizamos la tabla USUARIO (que es donde están el nombre y correo)
+            String sql;
+            if (password != null && !password.trim().isEmpty()) {
+                sql = "UPDATE USUARIO SET nombre = ?, correo = ?, password = ? WHERE id_usuario = ?";
+                psUsuario = con.prepareStatement(sql);
+                psUsuario.setString(1, nombre);
+                psUsuario.setString(2, correo);
+                psUsuario.setString(3, password);
+                psUsuario.setInt(4, id_usuario);
+            } else {
+                sql = "UPDATE USUARIO SET nombre = ?, correo = ? WHERE id_usuario = ?";
+                psUsuario = con.prepareStatement(sql);
+                psUsuario.setString(1, nombre);
+                psUsuario.setString(2, correo);
+                psUsuario.setInt(3, id_usuario);
+            }
+
+            if (psUsuario.executeUpdate() > 0) {
+                editado = true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error al editar maestro: " + e.getMessage());
+        } finally {
+            // ... (cerrar conexiones como siempre)
+        }
+        return editado;
+    }
+
+    // Método para ELIMINAR un maestro
+    public boolean eliminarMaestro(int id_usuario, int id_maestro) {
+        boolean eliminado = false;
+        Connection con = null;
+        PreparedStatement psMaestro = null;
+        PreparedStatement psUsuario = null;
+
+        try {
+            con = Conexion.getConexion();
+            // 1. Borrar de la tabla hija (MAESTRO)
+            String sqlM = "DELETE FROM MAESTRO WHERE id_maestro = ?";
+            psMaestro = con.prepareStatement(sqlM);
+            psMaestro.setInt(1, id_maestro);
+            
+            if (psMaestro.executeUpdate() > 0) {
+                // 2. Borrar de la tabla padre (USUARIO)
+                String sqlU = "DELETE FROM USUARIO WHERE id_usuario = ?";
+                psUsuario = con.prepareStatement(sqlU);
+                psUsuario.setInt(1, id_usuario);
+                if (psUsuario.executeUpdate() > 0) {
+                    eliminado = true;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error al eliminar maestro: " + e.getMessage());
+        } finally {
+            // ... (cerrar conexiones)
+        }
+        return eliminado;
     }
     
 }

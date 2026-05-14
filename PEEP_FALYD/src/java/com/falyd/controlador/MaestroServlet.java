@@ -44,6 +44,25 @@ public class MaestroServlet extends HttpServlet {
             } else {
                 response.sendRedirect("panel_admin.jsp?msg=error");
             }
+        }else if ("editar".equals(accion)) {
+            int id_u = Integer.parseInt(request.getParameter("id_usuario"));
+            int id_m = Integer.parseInt(request.getParameter("id_maestro"));
+            String nom = request.getParameter("nombre");
+            String cor = request.getParameter("correo");
+            String pas = request.getParameter("password");
+
+            MaestroDAO dao = new MaestroDAO();
+            if (dao.editarMaestro(id_u, id_m, nom, cor, pas)) {
+                response.sendRedirect("panel_admin.jsp?msg=editado");
+            }
+        } else if ("eliminar".equals(accion)) {
+            int id_u = Integer.parseInt(request.getParameter("id_usuario"));
+            int id_m = Integer.parseInt(request.getParameter("id_maestro"));
+
+            MaestroDAO dao = new MaestroDAO();
+            if (dao.eliminarMaestro(id_u, id_m)) {
+                response.sendRedirect("panel_admin.jsp?msg=eliminado");
+            }
         }
     }
 }
