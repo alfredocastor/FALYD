@@ -59,7 +59,9 @@
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold">Panel de Secretaría</h2>
-            <button class="btn btn-falyd"><i class="bi bi-plus-lg me-2"></i>Nuevo Alumno</button>
+            <button class="btn btn-falyd" data-bs-toggle="modal" data-bs-target="#modalNuevoAlumno">
+                <i class="bi bi-plus-lg me-2"></i>Nuevo Alumno
+            </button>
         </div>
 
         <div class="card card-custom p-4">
@@ -85,18 +87,57 @@
                                 <button class="btn btn-sm btn-outline-primary">Editar</button>
                             </td>
                         </tr>
-                        <tr>
-                            <td><strong>2026002</strong></td>
-                            <td>Pedro Jiménez</td>
-                            <td>3º B</td>
-                            <td>Ayer</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary">Editar</button>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalNuevoAlumno" tabindex="-1" aria-labelledby="modalNuevoAlumnoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header" style="background-color: var(--blue-falyd); color: white;">
+                    <h5 class="modal-title fw-bold" id="modalNuevoAlumnoLabel">
+                        <i class="bi bi-person-plus-fill me-2"></i>Inscribir Nuevo Alumno
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <form action="AlumnoServlet" method="POST">
+                    <div class="modal-body p-4">
+                        
+                        <input type="hidden" name="accion" value="agregar">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Nombre Completo</label>
+                            <input type="text" class="form-control" name="nombre" placeholder="Ej. Juan Pérez" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Correo Electrónico (Usuario)</label>
+                            <input type="email" class="form-control" name="correo" placeholder="alumno@peep.com" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Contraseña Temporal</label>
+                            <input type="password" class="form-control" name="password" placeholder="Mínimo 6 caracteres" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Asignar Grupo</label>
+                            <select class="form-select" name="id_grupo" required>
+                                <option value="" selected disabled>Selecciona un grupo...</option>
+                                <option value="1">1º A</option>
+                                <option value="2">2º B</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-falyd">Guardar Alumno</button>
+                    </div>
+                </form>
+                </div>
         </div>
     </div>
 
