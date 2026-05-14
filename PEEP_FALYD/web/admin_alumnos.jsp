@@ -22,14 +22,47 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <style>
-            :root { --blue-falyd: #0b3b60; --red-falyd: #d32f2f; }
-            body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-            .sidebar { width: 250px; height: 100vh; position: fixed; background: #1a1d20; color: white; border-right: 1px solid #333; }
-            .nav-link { color: #adb5bd; padding: 12px 20px; font-weight: 500; }
-            .nav-link:hover, .nav-link.active { background-color: #343a40; color: white; border-left: 4px solid var(--red-falyd); }
-            .main-content { margin-left: 250px; padding: 30px; }
-            .header-panel { background: white; padding: 15px 30px; border-bottom: 1px solid #ddd; margin-left: 250px; }
-            .card-custom { border-radius: 15px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+            :root {
+                --blue-falyd: #0b3b60;
+                --red-falyd: #d32f2f;
+            }
+            body {
+                background-color: #f0f2f5;
+                font-family: 'Segoe UI', sans-serif;
+            }
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                background: #1a1d20;
+                color: white;
+                border-right: 1px solid #333;
+            }
+            .nav-link {
+                color: #adb5bd;
+                padding: 12px 20px;
+                font-weight: 500;
+            }
+            .nav-link:hover, .nav-link.active {
+                background-color: #343a40;
+                color: white;
+                border-left: 4px solid var(--red-falyd);
+            }
+            .main-content {
+                margin-left: 250px;
+                padding: 30px;
+            }
+            .header-panel {
+                background: white;
+                padding: 15px 30px;
+                border-bottom: 1px solid #ddd;
+                margin-left: 250px;
+            }
+            .card-custom {
+                border-radius: 15px;
+                border: none;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            }
         </style>
     </head>
     <body>
@@ -40,14 +73,14 @@
             </div>
             <nav class="nav flex-column mt-3">
                 <a class="nav-link" href="panel_admin.jsp"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-                
+
                 <p class="text-uppercase text-muted small ms-3 mt-3 mb-1">Gestión de Usuarios</p>
                 <a class="nav-link" href="admin_maestros.jsp"><i class="bi bi-person-badge me-2"></i> Maestros</a>
-                
+
                 <a class="nav-link active" href="admin_alumnos.jsp"><i class="bi bi-people me-2"></i> Alumnos</a>
-                
+
                 <a class="nav-link" href="admin_secretarias.jsp"><i class="bi bi-person-workspace me-2"></i> Secretaría</a>
-                
+
                 <p class="text-uppercase text-muted small ms-3 mt-3 mb-1">Sistema</p>
                 <a class="nav-link" href="admin_grupos.jsp"><i class="bi bi-journal-bookmark me-2"></i> Materias y Grupos</a>
                 <a class="nav-link" href="#"><i class="bi bi-gear me-2"></i> Configuración</a>
@@ -77,9 +110,9 @@
             <div class="card card-custom p-4 mt-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="fw-bold mb-0"><i class="bi bi-people-fill me-2 text-primary"></i>Matrícula Activa</h5>
-                    <button class="btn btn-outline-secondary">
-                        <i class="bi bi-printer me-2"></i>Imprimir Reporte
-                    </button>
+                    <a href="ReporteServlet?tipo=alumnos" class="btn btn-outline-secondary">
+                        <i class="bi bi-file-earmark-pdf-fill me-2 text-danger"></i>Descargar PDF
+                    </a>
                 </div>
 
                 <div class="table-responsive">
@@ -97,35 +130,35 @@
                                 // Reutilizamos tu AlumnoDAO que ya funciona perfecto
                                 AlumnoDAO aDAO = new AlumnoDAO();
                                 List<Alumno> listaAlumnos = aDAO.listarAlumnos();
-                                
-                                if(listaAlumnos.isEmpty()) {
-                            %>
-                                <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">No hay alumnos registrados en el sistema aún.</td>
-                                </tr>
-                            <%
-                                } else {
-                                    for (Alumno a : listaAlumnos) {
+
+                                if (listaAlumnos.isEmpty()) {
                             %>
                             <tr>
-                                <td><strong><%= a.getId_alumno() %></strong></td>
+                                <td colspan="4" class="text-center py-4 text-muted">No hay alumnos registrados en el sistema aún.</td>
+                            </tr>
+                            <%
+                            } else {
+                                for (Alumno a : listaAlumnos) {
+                            %>
+                            <tr>
+                                <td><strong><%= a.getId_alumno()%></strong></td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="https://ui-avatars.com/api/?name=<%= a.getNombre() %>&background=random&color=fff" class="rounded-circle me-2" width="32">
-                                        <%= a.getNombre() %>
+                                        <img src="https://ui-avatars.com/api/?name=<%= a.getNombre()%>&background=random&color=fff" class="rounded-circle me-2" width="32">
+                                        <%= a.getNombre()%>
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge <%= (a.getGrupo() != null && !a.getGrupo().isEmpty()) ? "bg-info text-dark" : "bg-secondary" %>">
-                                        <%= (a.getGrupo() != null && !a.getGrupo().isEmpty()) ? a.getGrupo() : "Sin asignar" %>
+                                    <span class="badge <%= (a.getGrupo() != null && !a.getGrupo().isEmpty()) ? "bg-info text-dark" : "bg-secondary"%>">
+                                        <%= (a.getGrupo() != null && !a.getGrupo().isEmpty()) ? a.getGrupo() : "Sin asignar"%>
                                     </span>
                                 </td>
                                 <td><span class="badge bg-success-subtle text-success border border-success-subtle">Inscrito</span></td>
                             </tr>
-                            <% 
+                            <%
                                     } // fin del for
                                 } // fin del else
-                            %>
+%>
                         </tbody>
                     </table>
                 </div>

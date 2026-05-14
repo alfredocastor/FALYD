@@ -109,8 +109,12 @@
         </div>
 
         <div class="main-content">
-            <h2 class="fw-bold mb-4">Vista General del Sistema</h2>
-
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0">Vista General del Sistema</h2>
+                <a href="ReporteServlet?tipo=sistema" class="btn btn-outline-danger shadow-sm">
+                    <i class="bi bi-file-earmark-pdf-fill me-2"></i>Descargar Resumen
+                </a>
+            </div>
             <div class="row g-4 mb-4">
                 <div class="col-md-3">
                     <div class="card card-custom p-4 border-bottom border-primary border-4 text-center h-100">
