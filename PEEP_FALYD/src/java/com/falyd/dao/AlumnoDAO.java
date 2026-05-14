@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -84,20 +86,21 @@ public class AlumnoDAO {
         return registrado;
     }
 
-    public java.util.List<Alumno> listarAlumnos() {
-        java.util.List<Alumno> lista = new java.util.ArrayList<>();
+    // Método para LISTAR todos los alumnos
+    public List<Alumno> listarAlumnos() {
+        List<Alumno> lista = new ArrayList<>();
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String sql = "SELECT a.id_alumno, a.id_usuario, a.id_grupo, u.nombre, u.correo, g.nombre_grupo "
-                + "FROM ALUMNO a "
-                + "INNER JOIN USUARIO u ON a.id_usuario = u.id_usuario "
-                + "INNER JOIN GRUPO g ON a.id_grupo = g.id_grupo "
-                + "ORDER BY a.id_alumno DESC";
-
         try {
             con = Conexion.getConexion();
+            // Se actualiza el SQL para unir ALUMNO, USUARIO y GRUPO
+            String sql = "SELECT a.id_alumno, a.id_usuario, u.nombre, u.correo, g.nombre_grupo " +
+                         "FROM ALUMNO a " +
+                         "INNER JOIN USUARIO u ON a.id_usuario = u.id_usuario " +
+                         "LEFT JOIN GRUPO g ON a.id_grupo = g.id_grupo";
+            
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
 
@@ -105,27 +108,22 @@ public class AlumnoDAO {
                 Alumno alu = new Alumno();
                 alu.setId_alumno(rs.getInt("id_alumno"));
                 alu.setId_usuario(rs.getInt("id_usuario"));
-                alu.setId_grupo(rs.getInt("id_grupo"));
                 alu.setNombre(rs.getString("nombre"));
                 alu.setCorreo(rs.getString("correo"));
-                alu.setNombre_grupo(rs.getString("nombre_grupo"));
+                
+                // Extraemos el nombre del grupo del ResultSet y lo asignamos
+                alu.setGrupo(rs.getString("nombre_grupo")); 
+                
                 lista.add(alu);
             }
         } catch (Exception e) {
             System.out.println("Error al listar alumnos: " + e.getMessage());
         } finally {
             try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (Exception e) {
-            }
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (Exception e) {}
         }
         return lista;
     }

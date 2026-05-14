@@ -75,7 +75,7 @@
                 <a class="nav-link" href="panel_admin.jsp"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
                 <p class="text-uppercase text-muted small ms-3 mt-3 mb-1">Gestión de Usuarios</p>
                 <a class="nav-link active" href="admin_maestros.jsp"><i class="bi bi-person-badge me-2"></i> Maestros</a>
-                <a class="nav-link" href="#"><i class="bi bi-people me-2"></i> Alumnos</a>
+                <a class="nav-link" href="admin_alumnos.jsp"><i class="bi bi-people me-2"></i> Alumnos</a>
                 <a class="nav-link" href="#"><i class="bi bi-person-workspace me-2"></i> Secretaría</a>
                 <p class="text-uppercase text-muted small ms-3 mt-3 mb-1">Sistema</p>
                 <a class="nav-link" href="#"><i class="bi bi-journal-bookmark me-2"></i> Materias y Grupos</a>
@@ -125,91 +125,91 @@
                                 for (Maestro m : lista) {
                             %>
                             <tr>
-                                <td><strong><%= m.getId_maestro() %></strong></td>
+                                <td><strong><%= m.getId_maestro()%></strong></td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="https://ui-avatars.com/api/?name=<%= m.getNombre() %>&background=random&color=fff" class="rounded-circle me-2" width="32">
-                                        <%= m.getNombre() %>
+                                        <img src="https://ui-avatars.com/api/?name=<%= m.getNombre()%>&background=random&color=fff" class="rounded-circle me-2" width="32">
+                                        <%= m.getNombre()%>
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="text-muted small"><i class="bi bi-envelope me-1"></i><%= m.getCorreo() %></span>
+                                    <span class="text-muted small"><i class="bi bi-envelope me-1"></i><%= m.getCorreo()%></span>
                                 </td>
                                 <td><span class="badge bg-success-subtle text-success border border-success-subtle">Activo</span></td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditarMaestro<%= m.getId_maestro() %>" title="Editar">
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditarMaestro<%= m.getId_maestro()%>" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="modal" data-bs-target="#modalEliminarMaestro<%= m.getId_maestro() %>" title="Eliminar">
+                                    <button class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="modal" data-bs-target="#modalEliminarMaestro<%= m.getId_maestro()%>" title="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </td>
                             </tr>
 
-                            <div class="modal fade" id="modalEditarMaestro<%= m.getId_maestro() %>" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content border-0 shadow">
-                                        <div class="modal-header bg-primary text-white">
-                                            <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Maestro</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <form action="MaestroServlet" method="POST">
-                                            <div class="modal-body p-4">
-                                                <input type="hidden" name="accion" value="editar">
-                                                <input type="hidden" name="id_usuario" value="<%= m.getId_usuario() %>">
-                                                <input type="hidden" name="id_maestro" value="<%= m.getId_maestro() %>">
-                                                
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-muted">Nombre Completo</label>
-                                                    <input type="text" class="form-control" name="nombre" value="<%= m.getNombre() %>" required>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-muted">Correo Electrónico (Login)</label>
-                                                    <input type="email" class="form-control" name="correo" value="<%= m.getCorreo() %>" required>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-muted">Nueva Contraseña</label>
-                                                    <input type="password" class="form-control" name="password" placeholder="Dejar en blanco para no cambiarla">
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer bg-light border-0">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <button type="submit" class="btn btn-primary px-4">Actualizar Cambios</button>
-                                            </div>
-                                        </form>
+                        <div class="modal fade" id="modalEditarMaestro<%= m.getId_maestro()%>" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Maestro</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
+                                    <form action="MaestroServlet" method="POST">
+                                        <div class="modal-body p-4">
+                                            <input type="hidden" name="accion" value="editar">
+                                            <input type="hidden" name="id_usuario" value="<%= m.getId_usuario()%>">
+                                            <input type="hidden" name="id_maestro" value="<%= m.getId_maestro()%>">
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold small text-muted">Nombre Completo</label>
+                                                <input type="text" class="form-control" name="nombre" value="<%= m.getNombre()%>" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold small text-muted">Correo Electrónico (Login)</label>
+                                                <input type="email" class="form-control" name="correo" value="<%= m.getCorreo()%>" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold small text-muted">Nueva Contraseña</label>
+                                                <input type="password" class="form-control" name="password" placeholder="Dejar en blanco para no cambiarla">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer bg-light border-0">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-primary px-4">Actualizar Cambios</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="modal fade" id="modalEliminarMaestro<%= m.getId_maestro() %>" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content border-0 shadow">
-                                        <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Eliminar Maestro</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <form action="MaestroServlet" method="POST">
-                                            <div class="modal-body p-4 text-center">
-                                                <input type="hidden" name="accion" value="eliminar">
-                                                <input type="hidden" name="id_usuario" value="<%= m.getId_usuario() %>">
-                                                <input type="hidden" name="id_maestro" value="<%= m.getId_maestro() %>">
-                                                
-                                                <i class="bi bi-person-x text-danger mb-3" style="font-size: 3rem;"></i>
-                                                <p class="fs-5 mb-1">¿Estás seguro de que deseas dar de baja al maestro <br><strong><%= m.getNombre() %></strong>?</p>
-                                                <p class="text-muted small">Esta acción eliminará su acceso al sistema y lo desvinculará de sus materias.</p>
-                                            </div>
-                                            <div class="modal-footer bg-light border-0 justify-content-center">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <button type="submit" class="btn btn-danger px-4">Sí, dar de baja</button>
-                                            </div>
-                                        </form>
+                        <div class="modal fade" id="modalEliminarMaestro<%= m.getId_maestro()%>" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Eliminar Maestro</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
+                                    <form action="MaestroServlet" method="POST">
+                                        <div class="modal-body p-4 text-center">
+                                            <input type="hidden" name="accion" value="eliminar">
+                                            <input type="hidden" name="id_usuario" value="<%= m.getId_usuario()%>">
+                                            <input type="hidden" name="id_maestro" value="<%= m.getId_maestro()%>">
+
+                                            <i class="bi bi-person-x text-danger mb-3" style="font-size: 3rem;"></i>
+                                            <p class="fs-5 mb-1">¿Estás seguro de que deseas dar de baja al maestro <br><strong><%= m.getNombre()%></strong>?</p>
+                                            <p class="text-muted small">Esta acción eliminará su acceso al sistema y lo desvinculará de sus materias.</p>
+                                        </div>
+                                        <div class="modal-footer bg-light border-0 justify-content-center">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger px-4">Sí, dar de baja</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
+                        </div>
 
-                            <% } %>
+                        <% }%>
                         </tbody>
                     </table>
                 </div>
