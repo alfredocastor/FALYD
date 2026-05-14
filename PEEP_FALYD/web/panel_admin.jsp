@@ -87,7 +87,7 @@
                 <p class="text-uppercase text-muted small ms-3 mt-3 mb-1">Gestión de Usuarios</p>
                 <a class="nav-link" href="admin_maestros.jsp"><i class="bi bi-person-badge me-2"></i> Maestros</a>
                 <a class="nav-link" href="admin_alumnos.jsp"><i class="bi bi-people me-2"></i> Alumnos</a>
-                <a class="nav-link" href="#"><i class="bi bi-person-workspace me-2"></i> Secretaría</a>
+                <a class="nav-link" href="admin_secretarias.jsp"><i class="bi bi-person-workspace me-2"></i> Secretaría</a>
 
                 <p class="text-uppercase text-muted small ms-3 mt-3 mb-1">Sistema</p>
                 <a class="nav-link" href="admin_grupos.jsp"><i class="bi bi-journal-bookmark me-2"></i> Materias y Grupos</a>

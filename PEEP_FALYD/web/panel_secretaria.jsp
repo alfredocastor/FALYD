@@ -90,8 +90,14 @@
                         <tr>
                             <td><strong><%= alu.getId_alumno() %></strong></td>
                             <td><%= alu.getNombre() %> <br><small class="text-muted"><%= alu.getCorreo() %></small></td>
-                            <td><span class="badge bg-secondary"><%= alu.getNombre_grupo() %></span></td>
-                            <td>Hoy</td>
+                            <td>
+                                <span class="badge <%= (alu.getGrupo() != null && !alu.getGrupo().isEmpty()) ? "bg-info text-dark" : "bg-secondary" %>">
+                                    <%= (alu.getGrupo() != null && !alu.getGrupo().isEmpty()) ? alu.getGrupo() : "Sin asignar" %>
+                                </span>
+                            </td>
+                            <td>
+                                <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date()) %>
+                            </td>
                             <td>
                                 <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditar<%= alu.getId_alumno() %>">
                                     <i class="bi bi-pencil"></i> Editar
@@ -100,79 +106,79 @@
                                 <button class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="modal" data-bs-target="#modalEliminar<%= alu.getId_alumno() %>">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
-                            </td>
+
+                                <div class="modal fade" id="modalEliminar<%= alu.getId_alumno() %>" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Baja</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form action="AlumnoServlet" method="POST">
+                                                <div class="modal-body p-4 text-center">
+                                                    <input type="hidden" name="accion" value="eliminar">
+                                                    <input type="hidden" name="id_usuario" value="<%= alu.getId_usuario() %>">
+                                                    <input type="hidden" name="id_alumno" value="<%= alu.getId_alumno() %>">
+                                                    
+                                                    <i class="bi bi-x-circle text-danger mb-3" style="font-size: 3rem;"></i>
+                                                    <p class="fs-5 mb-1">¿Estás seguro de que deseas dar de baja a <br><strong><%= alu.getNombre() %></strong>?</p>
+                                                    <p class="text-muted small">Esta acción no se puede deshacer.</p>
+                                                </div>
+                                                <div class="modal-footer bg-light justify-content-center">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-danger">Sí, dar de baja</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="modalEditar<%= alu.getId_alumno() %>" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Alumno</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form action="AlumnoServlet" method="POST">
+                                                <div class="modal-body p-4">
+                                                    <input type="hidden" name="accion" value="editar">
+                                                    <input type="hidden" name="id_usuario" value="<%= alu.getId_usuario() %>">
+                                                    <input type="hidden" name="id_alumno" value="<%= alu.getId_alumno() %>">
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold small text-muted">Nombre Completo</label>
+                                                        <input type="text" class="form-control" name="nombre" value="<%= alu.getNombre() %>" required>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold small text-muted">Correo Electrónico</label>
+                                                        <input type="email" class="form-control" name="correo" value="<%= alu.getCorreo() %>" required>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold small text-muted">Nueva Contraseña (Opcional)</label>
+                                                        <input type="password" class="form-control" name="password" placeholder="Dejar en blanco para conservar actual">
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold small text-muted">Asignar Grupo</label>
+                                                        <select class="form-select" name="id_grupo" required>
+                                                            <option value="1" <%= alu.getId_grupo() == 1 ? "selected" : "" %>>1º A</option>
+                                                            <option value="2" <%= alu.getId_grupo() == 2 ? "selected" : "" %>>2º B</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer bg-light">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                </td>
                         </tr>
-
-                        <div class="modal fade" id="modalEliminar<%= alu.getId_alumno() %>" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-0 shadow">
-                                    <div class="modal-header bg-danger text-white">
-                                        <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Baja</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form action="AlumnoServlet" method="POST">
-                                        <div class="modal-body p-4 text-center">
-                                            <input type="hidden" name="accion" value="eliminar">
-                                            <input type="hidden" name="id_usuario" value="<%= alu.getId_usuario() %>">
-                                            <input type="hidden" name="id_alumno" value="<%= alu.getId_alumno() %>">
-                                            
-                                            <i class="bi bi-x-circle text-danger mb-3" style="font-size: 3rem;"></i>
-                                            <p class="fs-5 mb-1">¿Estás seguro de que deseas dar de baja a <br><strong><%= alu.getNombre() %></strong>?</p>
-                                            <p class="text-muted small">Esta acción no se puede deshacer.</p>
-                                        </div>
-                                        <div class="modal-footer bg-light justify-content-center">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-danger">Sí, dar de baja</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal fade" id="modalEditar<%= alu.getId_alumno() %>" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-0 shadow">
-                                    <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Alumno</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form action="AlumnoServlet" method="POST">
-                                        <div class="modal-body p-4">
-                                            <input type="hidden" name="accion" value="editar">
-                                            <input type="hidden" name="id_usuario" value="<%= alu.getId_usuario() %>">
-                                            <input type="hidden" name="id_alumno" value="<%= alu.getId_alumno() %>">
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold small text-muted">Nombre Completo</label>
-                                                <input type="text" class="form-control" name="nombre" value="<%= alu.getNombre() %>" required>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold small text-muted">Correo Electrónico</label>
-                                                <input type="email" class="form-control" name="correo" value="<%= alu.getCorreo() %>" required>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold small text-muted">Nueva Contraseña (Opcional)</label>
-                                                <input type="password" class="form-control" name="password" placeholder="Dejar en blanco para conservar actual">
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold small text-muted">Asignar Grupo</label>
-                                                <select class="form-select" name="id_grupo" required>
-                                                    <option value="1" <%= alu.getId_grupo() == 1 ? "selected" : "" %>>1º A</option>
-                                                    <option value="2" <%= alu.getId_grupo() == 2 ? "selected" : "" %>>2º B</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer bg-light">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                         <%
                             } // Fin del ciclo for
                         %>
@@ -226,7 +232,7 @@
                         <button type="submit" class="btn btn-falyd">Guardar Alumno</button>
                     </div>
                 </form>
-                </div>
+            </div>
         </div>
     </div>
 
