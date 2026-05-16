@@ -1,6 +1,7 @@
 package com.falyd.controlador;
 
 import com.falyd.dao.AlumnoDAO;
+import com.falyd.dao.CalificacionDAO;
 import com.falyd.dao.MaestroDAO;
 import com.falyd.dao.GrupoDAO;
 import com.falyd.dao.SecretariaDAO;
@@ -57,6 +58,11 @@ public class ReporteServlet extends HttpServlet {
         } else if ("sistema".equals(tipo)) {
             response.setHeader("Content-Disposition", "attachment; filename=Reporte_General_PEEP.pdf");
             generarReporteSistema(response.getOutputStream());
+        }else if ("calificaciones".equals(tipo)) {
+            // NUEVO: Atrapamos el ID de la materia y descargamos las notas
+            int idMateria = Integer.parseInt(request.getParameter("id_materia"));
+            response.setHeader("Content-Disposition", "attachment; filename=Reporte_Calificaciones_Materia.pdf");
+            generarReporteCalificaciones(response.getOutputStream(), idMateria);
         }
     }
 
@@ -224,5 +230,84 @@ public class ReporteServlet extends HttpServlet {
         footer.setAlignment(Element.ALIGN_CENTER);
         footer.setSpacingBefore(40);
         documento.add(footer);
+    }
+    private void generarReporteCalificaciones(OutputStream out, int idMateria) {
+        try {
+            Document documento = new Document();
+            PdfWriter.getInstance(documento, out);
+            documento.open();
+
+            // Usamos el encabezado FALYD institucional
+            generarEncabezado(documento, "Reporte Oficial de Calificaciones");
+
+            // Info de control
+            PdfPTable infoTabla = new PdfPTable(2);
+            infoTabla.setWidthPercentage(100);
+            infoTabla.setSpacingAfter(20);
+            
+            String fechaActual = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date());
+            agregarCeldaInfo(infoTabla, "Emisor: Personal Docente Autorizado", Element.ALIGN_LEFT);
+            agregarCeldaInfo(infoTabla, "Fecha de Exportación: " + fechaActual, Element.ALIGN_RIGHT);
+            agregarCeldaInfo(infoTabla, "Filtro aplicado: Calificación por Asignatura", Element.ALIGN_LEFT);
+            agregarCeldaInfo(infoTabla, "Estado: Evaluaciones del Periodo", Element.ALIGN_RIGHT);
+            documento.add(infoTabla);
+
+            // Malla de datos: #, Matrícula, Nombre del Estudiante, Promedio
+            PdfPTable tabla = new PdfPTable(4); 
+            tabla.setWidthPercentage(100);
+            // Definimos el grosor proporcional de cada columna
+            tabla.setWidths(new float[]{10f, 20f, 50f, 20f}); 
+            
+            String[] cabeceras = {"No.", "Matrícula", "Nombre Completo del Alumno", "Promedio"};
+            for (String cabecera : cabeceras) {
+                PdfPCell celda = new PdfPCell(new Phrase(cabecera, fontCabecera));
+                celda.setBackgroundColor(azulFalyd);
+                celda.setPadding(10);
+                celda.setHorizontalAlignment(Element.ALIGN_CENTER);
+                celda.setBorderColor(BaseColor.WHITE);
+                tabla.addCell(celda);
+            }
+
+            AlumnoDAO aDAO = new AlumnoDAO();
+            CalificacionDAO cDAO = new CalificacionDAO();
+            List<Alumno> listaAlumnos = aDAO.listarAlumnos();
+
+            int index = 1;
+            for (Alumno a : listaAlumnos) {
+                BaseColor colorFila = (index % 2 == 0) ? BaseColor.WHITE : grisTabla;
+                
+                // Calculamos el promedio exacto de la BD
+                double promedio = cDAO.obtenerPromedioAlumnoMateria(a.getId_alumno(), idMateria);
+                String promedioTexto = (promedio >= 0) ? String.format("%.2f", promedio) : "Sin notas";
+                
+                // Celda 1: Número de lista
+                PdfPCell c1 = new PdfPCell(new Phrase(String.valueOf(index), fontNormal));
+                c1.setBackgroundColor(colorFila); c1.setHorizontalAlignment(Element.ALIGN_CENTER); c1.setPadding(8); tabla.addCell(c1);
+                
+                // Celda 2: Matrícula formateada
+                PdfPCell c2 = new PdfPCell(new Phrase(String.format("%05d", a.getId_alumno()), fontNormal));
+                c2.setBackgroundColor(colorFila); c2.setHorizontalAlignment(Element.ALIGN_CENTER); c2.setPadding(8); tabla.addCell(c2);
+                
+                // Celda 3: Nombre completo
+                PdfPCell c3 = new PdfPCell(new Phrase(a.getNombre(), fontNormal));
+                c3.setBackgroundColor(colorFila); c3.setHorizontalAlignment(Element.ALIGN_LEFT); c3.setPadding(8); tabla.addCell(c3);
+                
+                // Celda 4: Promedio General (Si es mayor o igual a 9 va en negritas)
+                Font fontNota = (promedio >= 9.0) ? fontBold : fontNormal;
+                PdfPCell c4 = new PdfPCell(new Phrase(promedioTexto, fontNota));
+                c4.setBackgroundColor(colorFila); c4.setHorizontalAlignment(Element.ALIGN_CENTER); c4.setPadding(8); tabla.addCell(c4);
+                
+                index++;
+            }
+            
+            documento.add(tabla);
+            
+            // Pie de página con firmas de validez
+            generarPieDePagina(documento);
+            documento.close();
+            
+        } catch (Exception e) {
+            System.out.println("Error al generar PDF de calificaciones: " + e.getMessage());
+        }
     }
 }

@@ -160,4 +160,39 @@ public class MateriaDAO {
         }
         return editado;
     }
+    public List<Materia> listarMateriasPorMaestro(int idUsuario) {
+        List<Materia> lista = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            String sql = "SELECT m.id_materia, m.nombre_materia " +
+                         "FROM MATERIA m " +
+                         "INNER JOIN MAESTRO mae ON m.id_maestro = mae.id_maestro " +
+                         "WHERE mae.id_usuario = ?";
+            
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idUsuario);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Materia mat = new Materia();
+                mat.setId_materia(rs.getInt("id_materia"));
+                mat.setNombre_materia(rs.getString("nombre_materia"));
+                lista.add(mat);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al buscar materias del maestro: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) { rs.close(); }
+                if (ps != null) { ps.close(); }
+                if (con != null) { con.close(); }
+            } catch (Exception e) {
+            }
+        }
+        return lista;
+    }
 }
