@@ -25,10 +25,10 @@ public class Conexion {
             
             // Establecer la conexión
             con = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("¡Conexión exitosa a la base de datos peep_db!");
+            System.out.println("Conexion exitosa a la base de datos peep_db");
             
         } catch (ClassNotFoundException e) {
-            System.out.println("Error: No se encontró el driver de MySQL en las librerías.");
+            System.out.println("Error: No se encontro el driver de MySQL en las librerias.");
         } catch (SQLException e) {
             System.out.println("Error al conectar con la base de datos: " + e.getMessage());
         }

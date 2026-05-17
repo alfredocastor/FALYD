@@ -32,6 +32,10 @@
         <servlet-name>MensajeServlet</servlet-name>
         <servlet-class>com.falyd.controlador.MensajeServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EntregarTareaServlet</servlet-name>
+        <servlet-class>com.falyd.controlador.EntregarTareaServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AlumnoServlet</servlet-name>
         <url-pattern>/AlumnoServlet</url-pattern>
@@ -63,6 +67,10 @@
     <servlet-mapping>
         <servlet-name>MensajeServlet</servlet-name>
         <url-pattern>/MensajeServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EntregarTareaServlet</servlet-name>
+        <url-pattern>/EntregarTareaServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

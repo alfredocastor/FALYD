@@ -76,8 +76,7 @@
                 <a class="nav-link" href="panel_secretaria.jsp"><i class="bi bi-card-list me-2"></i> Directorio de Alumnos</a>
                 <a class="nav-link active" href="secretaria_materias.jsp"><i class="bi bi-journal-bookmark me-2"></i> Asignar Materias</a>
                 <hr>
-                <a class="nav-link text-danger" href="LogoutServlet"><i class="bi bi-box-arrow-left me-2"></i> Cerrar sesión</a>
-            </nav>
+<a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>            </nav>
         </div>
 
         <div class="header-panel d-flex justify-content-between align-items-center">
@@ -248,7 +247,7 @@
                 </div>
             </div>
         </div>
-
+<a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

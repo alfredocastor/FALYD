@@ -162,5 +162,33 @@ public class MaestroDAO {
         }
         return eliminado;
     }
+    // Listar todos los maestros registrados con sus datos de usuario
+    public List<com.falyd.modelo.Usuario> listarMaestrosContactos() {
+        List<com.falyd.modelo.Usuario> lista = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = com.falyd.conexion.Conexion.getConexion();
+            String sql = "SELECT u.id_usuario, u.nombre, u.correo FROM MAESTRO m " +
+                         "INNER JOIN USUARIO u ON m.id_usuario = u.id_usuario ORDER BY u.nombre ASC";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                com.falyd.modelo.Usuario u = new com.falyd.modelo.Usuario();
+                u.setId_usuario(rs.getInt("id_usuario"));
+                u.setNombre(rs.getString("nombre"));
+                u.setCorreo(rs.getString("correo"));
+                lista.add(u);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar maestros contactos: " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return lista;
+    }
     
 }

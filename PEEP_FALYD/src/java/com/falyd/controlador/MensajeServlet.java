@@ -29,14 +29,18 @@ public class MensajeServlet extends HttpServlet {
             int id_emisor = Integer.parseInt(request.getParameter("id_emisor"));
             int id_receptor = Integer.parseInt(request.getParameter("id_receptor"));
             String contenido = request.getParameter("contenido");
-
+            String origen = request.getParameter("origen");
+            
             // Solo enviamos si no está vacío
             if (contenido != null && !contenido.trim().isEmpty()) {
                 dao.enviarMensaje(id_emisor, id_receptor, contenido);
             }
+            if ("alumno".equals(origen)) {
+                response.sendRedirect("alumno_mensajes.jsp?id_maestro_user=" + id_receptor);
+            } else {
+                response.sendRedirect("maestro_mensajes.jsp?id_alumno=" + id_receptor);
+            }
             
-            // Recargamos la misma página manteniendo al alumno seleccionado para que se vea el nuevo mensaje
-            response.sendRedirect("maestro_mensajes.jsp?id_alumno=" + id_receptor);
         }
     }
 }

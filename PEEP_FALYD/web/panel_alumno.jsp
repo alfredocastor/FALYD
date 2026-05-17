@@ -8,6 +8,7 @@
 <%@page import="com.falyd.modelo.Materia"%>
 <%@page import="com.falyd.dao.MateriaDAO"%>
 <%@page import="java.time.LocalDate"%>
+<%@page import="java.time.temporal.ChronoUnit"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="java.util.Locale"%>
 <%@page import="java.util.List"%>
@@ -25,15 +26,24 @@
     // 1. Datos del alumno
     AlumnoDAO aDAO = new AlumnoDAO();
     Alumno miPerfil = aDAO.obtenerAlumnoPorUsuario(user.getId_usuario());
-    int miGrupoId = (miPerfil != null) ? miPerfil.getId_grupo() : 0;
     String nombreGrupo = (miPerfil != null && miPerfil.getGrupo() != null) ? miPerfil.getGrupo() : "Sin grupo";
 
-    // 2. Tareas dinámicas
+    // 2. Tareas dinámicas y filtro de pendientes
     TareaDAO tDAO = new TareaDAO();
-    List<Tarea> misTareas = tDAO.listarTareasParaAlumno();
+List<Tarea> misTareas = tDAO.listarTareasPendientesPorAlumno(miPerfil.getId_alumno());
+LocalDate hoy = LocalDate.now();
+    List<Tarea> tareasPendientes = new ArrayList<>();
+    
+    for (Tarea t : misTareas) {
+        if (t.getFecha_entrega() != null && !t.getFecha_entrega().isEmpty()) {
+            LocalDate fechaEntrega = LocalDate.parse(t.getFecha_entrega());
+            if (ChronoUnit.DAYS.between(hoy, fechaEntrega) >= 0) {
+                tareasPendientes.add(t);
+            }
+        }
+    }
 
     // 3. Fechas y Eventos Dinámicos de HOY
-    LocalDate hoy = LocalDate.now();
     DateTimeFormatter formatterText = DateTimeFormatter.ofPattern("EEEE dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
     String fechaHoyTexto = hoy.format(formatterText).substring(0, 1).toUpperCase() + hoy.format(formatterText).substring(1);
     String fechaHoySQL = hoy.toString();
@@ -77,6 +87,11 @@
         .btn-outline-custom:hover { background-color: #f8fafc; color: var(--blue-falyd); }
         .btn-action-light { background-color: #f8fafc; color: var(--blue-falyd); border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; padding: 6px 15px; text-decoration: none;}
         .btn-action-light:hover { background-color: #e3f2fd; }
+        
+        /* Estilos para las tarjetas de recursos inferiores */
+        .feature-card { background: #f8fafc; border-radius: 15px; padding: 20px; border: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100%; transition: 0.2s;}
+        .feature-card:hover { border-color: #cbd5e1; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .feature-img { width: 60px; height: 60px; margin-bottom: 15px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: white; }
     </style>
 </head>
 <body>
@@ -91,14 +106,13 @@
             <a class="nav-link active" href="panel_alumno.jsp"><i class="bi bi-house-door-fill"></i> Inicio</a>
             <a class="nav-link" href="alumno_clases.jsp"><i class="bi bi-book-half"></i> Mis clases</a>
             <a class="nav-link" href="alumno_tareas.jsp"><i class="bi bi-check2-square"></i> Tareas</a>
-            <a class="nav-link" href="#"><i class="bi bi-calendar3"></i> Calendario</a>
-            <a class="nav-link" href="#"><i class="bi bi-folder2-open"></i> Recursos</a>
-            <a class="nav-link" href="#"><i class="bi bi-bar-chart-fill"></i> Calificaciones</a>
-            <a class="nav-link" href="#"><i class="bi bi-chat-dots"></i> Mensajes</a>
-            <a class="nav-link" href="#"><i class="bi bi-question-circle"></i> Ayuda</a>
+            <a class="nav-link" href="alumno_calendario.jsp"><i class="bi bi-calendar3"></i> Calendario</a>
+            <a class="nav-link" href="alumno_recursos.jsp"><i class="bi bi-folder2-open"></i> Recursos</a>
+            <a class="nav-link" href="alumno_calificaciones.jsp"><i class="bi bi-bar-chart-fill"></i> Calificaciones</a>
+            <a class="nav-link" href="alumno_mensajes.jsp"><i class="bi bi-chat-dots"></i> Mensajes</a>
+            <a class="nav-link" href="alumno_ayuda.jsp"><i class="bi bi-question-circle"></i> Ayuda</a>
             <div class="mt-auto mb-4">
-                <a class="nav-link text-danger" href="LogoutServlet"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
-            </div>
+<a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>            </div>
         </nav>
     </div>
 
@@ -106,32 +120,30 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h4 class="fw-bold mb-0" style="color: var(--blue-falyd);">Sistema Web Escolar</h4>
-                <h5 class="fw-bold mb-0" style="color: var(--red-falyd);">Luis Moya</h5>
                 <p class="text-muted small mb-0">Panel del Alumno</p>
             </div>
             <div class="d-flex align-items-center bg-white p-2 rounded-pill shadow-sm border">
                 <div class="dropdown">
                     <button class="btn btn-link text-muted p-0 me-3 position-relative" data-bs-toggle="dropdown">
                         <i class="bi bi-bell-fill fs-5"></i>
-                        <% if(!misTareas.isEmpty()) { %>
+                        <% if(!tareasPendientes.isEmpty()) { %>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 0.65rem; padding: 4px 6px;">
-                                <%= misTareas.size() %>
+                                <%= tareasPendientes.size() %>
                             </span>
                         <% } %>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="width: 320px; border-radius: 15px; margin-top: 15px;">
                         <li><h6 class="dropdown-header fw-bold text-dark fs-6 border-bottom pb-2">Notificaciones</h6></li>
-                        <% if(misTareas.isEmpty()) { %>
+                        <% if(tareasPendientes.isEmpty()) { %>
                             <li><a class="dropdown-item py-3 small text-wrap text-muted text-center" href="#">No tienes tareas nuevas.</a></li>
                         <% } else { %>
-                            <li><a class="dropdown-item py-3 small text-wrap text-muted" href="#"><i class="bi bi-journal-text me-2 text-primary"></i>Tienes <%= misTareas.size() %> tareas pendientes.</a></li>
+                            <li><a class="dropdown-item py-3 small text-wrap text-muted" href="alumno_tareas.jsp"><i class="bi bi-journal-text me-2 text-primary"></i>Tienes <%= tareasPendientes.size() %> tareas pendientes.</a></li>
                         <% } %>
                     </ul>
                 </div>
                 <img src="https://ui-avatars.com/api/?name=<%= user.getNombre() %>&background=e3f2fd&color=0b3b60" class="rounded-circle me-2" width="40">
                 <div class="me-2 lh-sm">
                     <p class="mb-0 fw-bold small"><%= user.getNombre() %></p>
-                    <p class="mb-0 text-muted" style="font-size: 0.75rem;">Alumno</p>
                 </div>
             </div>
         </div>
@@ -151,7 +163,7 @@
                 <div class="card-custom">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold mb-0">Agenda de hoy</h5>
-                        <a href="#" class="btn-outline-custom"><i class="bi bi-calendar4 me-1"></i> Ver calendario</a>
+                        <a href="alumno_calendario.jsp" class="btn-outline-custom"><i class="bi bi-calendar4 me-1"></i> Ver calendario</a>
                     </div>
                     <p class="text-muted small mb-3 text-capitalize"><%= fechaHoyTexto %></p>
                     
@@ -181,49 +193,15 @@
 
         <div class="row g-4 mb-4">
             <div class="col-md-6">
-                <div class="card-custom">
-                    <h5 class="fw-bold mb-4">Mis tareas pendientes</h5>
-                    
-                    <% if(misTareas.isEmpty()) { %>
-                        <div class="text-center py-4">
-                            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
-                            <p class="text-muted mt-2 fw-bold small">¡Estás al día! No tienes tareas pendientes.</p>
-                        </div>
-                    <% } else { 
-                        int limit = Math.min(misTareas.size(), 3);
-                        String[] colores = {"#f59e0b", "#ef4444", "#10b981", "#3b82f6"};
-                        for(int i = 0; i < limit; i++) {
-                            Tarea t = misTareas.get(i);
-                            String colorActual = colores[i % colores.length];
-                    %>
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                        <div class="d-flex align-items-center">
-                            <div class="subject-icon shadow-sm me-3" style="background-color: #f1f5f9; color: <%= colorActual %>; width: 40px; height: 40px;"><i class="bi bi-journal-text"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-1 text-dark small text-truncate" style="max-width: 200px;"><%= t.getTitulo() %></h6>
-                                <p class="mb-0 text-muted" style="font-size: 0.75rem;"><i class="bi bi-calendar-event me-1"></i><%= t.getFecha_entrega() %> • <%= t.getNombre_materia() %></p>
-                            </div>
-                        </div>
-                        <a href="#" class="btn-action-light">Entregar</a>
-                    </div>
-                    <% } } %>
-                    
-                    <div class="text-center mt-4 pt-2">
-                        <a href="#" class="btn btn-light w-100 fw-bold text-muted border">Ver todas <i class="bi bi-chevron-right"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
                 <div class="card-custom h-100">
                     <h5 class="fw-bold mb-4">Mis clases</h5>
                     
                     <% if(misClases.isEmpty()) { %>
                         <p class="text-muted small text-center mt-4">No hay materias registradas en el sistema.</p>
                     <% } else { 
-                        int limitClases = Math.min(misClases.size(), 4);
-                        String[] coloresClase = {"#0d47a1", "#10b981", "#8b5cf6", "#d69e2e"};
-                        String[] iconosClase = {"bi-calculator", "bi-globe-americas", "bi-translate", "bi-flask"};
+                        int limitClases = Math.min(misClases.size(), 3);
+                        String[] coloresClase = {"#0d47a1", "#10b981", "#8b5cf6"};
+                        String[] iconosClase = {"bi-calculator", "bi-globe-americas", "bi-translate"};
                         
                         for(int i = 0; i < limitClases; i++) {
                             Materia m = misClases.get(i);
@@ -240,11 +218,94 @@
                     </div>
                     <% } } %>
                     
+                    <div class="text-center mt-4 pt-2">
+                        <a href="alumno_clases.jsp" class="btn btn-light w-100 fw-bold text-muted border">Ver todas <i class="bi bi-chevron-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card-custom">
+                    <h5 class="fw-bold mb-4">Mis tareas pendientes</h5>
+                    
+                    <% if(tareasPendientes.isEmpty()) { %>
+                        <div class="text-center py-4">
+                            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2 fw-bold small">¡Estás al día! No tienes tareas pendientes.</p>
+                        </div>
+                    <% } else { 
+                        int limit = Math.min(tareasPendientes.size(), 3);
+                        String[] colores = {"#f59e0b", "#ef4444", "#10b981", "#3b82f6"};
+                        for(int i = 0; i < limit; i++) {
+                            Tarea t = tareasPendientes.get(i);
+                            String colorActual = colores[i % colores.length];
+                    %>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <div class="d-flex align-items-center">
+                            <div class="subject-icon shadow-sm me-3" style="background-color: #f1f5f9; color: <%= colorActual %>; width: 40px; height: 40px;"><i class="bi bi-journal-text"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-dark small text-truncate" style="max-width: 200px;"><%= t.getTitulo() %></h6>
+                                <p class="mb-0 text-muted" style="font-size: 0.75rem;"><i class="bi bi-calendar-event me-1"></i><%= t.getFecha_entrega() %> • <%= t.getNombre_materia() %></p>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-action-light">Entregar</a>
+                    </div>
+                    <% } } %>
+                    
+                    <div class="text-center mt-4 pt-2">
+                        <a href="alumno_tareas.jsp" class="btn btn-light w-100 fw-bold text-muted border">Ver todas <i class="bi bi-chevron-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="fw-bold mb-3 mt-2">Recursos</h5>
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-img shadow-sm" style="background-color: #e3f2fd; color: #1e88e5;"><i class="bi bi-bookshelf"></i></div>
+                    <h6 class="fw-bold text-dark mb-1">Libros en biblioteca virtual</h6>
+                    <p class="text-muted small mb-3 flex-grow-1">Accede a materiales de apoyo y consulta en línea.</p>
+                    <a href="alumno_recursos.jsp" class="text-decoration-none fw-bold small" style="color: var(--blue-falyd);">Ver más <i class="bi bi-chevron-right"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-img shadow-sm" style="background-color: #ffebee; color: #ef4444;"><i class="bi bi-play-btn-fill"></i></div>
+                    <h6 class="fw-bold text-dark mb-1">Videos educativos</h6>
+                    <p class="text-muted small mb-3 flex-grow-1">Contenido audiovisual para reforzar tus clases.</p>
+                    <a href="alumno_recursos.jsp" class="text-decoration-none fw-bold small" style="color: #ef4444;">Ver más <i class="bi bi-chevron-right"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-img shadow-sm" style="background-color: #e8f5e9; color: #10b981;"><i class="bi bi-file-earmark-text"></i></div>
+                    <h6 class="fw-bold text-dark mb-1">Guías de estudio</h6>
+                    <p class="text-muted small mb-3 flex-grow-1">Descarga formatos, rúbricas y guías de evaluación.</p>
+                    <a href="alumno_recursos.jsp" class="text-decoration-none fw-bold small" style="color: #10b981;">Ver más <i class="bi bi-chevron-right"></i></a>
                 </div>
             </div>
         </div>
     </div>
-
+<div class="modal fade" id="modalCerrarSesion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+                <div class="modal-body text-center p-4">
+                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 75px; height: 75px; background-color: #fee2e2; border-radius: 50%; color: #ef4444; font-size: 2.2rem;">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </div>
+                    
+                    <h4 class="fw-bold mb-2" style="color: var(--text-main);">¿Cerrar sesión?</h4>
+                    <p class="text-muted small mb-4 px-2">Estás a punto de cerrar sesión en el sistema. Tendrás que ingresar tus credenciales nuevamente para acceder.</p>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="button" class="btn fw-bold px-4 py-2 flex-grow-1" data-bs-dismiss="modal" style="border: 1px solid var(--border-color); color: var(--blue-falyd); border-radius: 10px; background: white;">Cancelar</button>
+                        <a href="LogoutServlet" class="btn btn-danger fw-bold px-4 py-2 flex-grow-1" style="border-radius: 10px; background-color: #e53e3e; border: none;">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

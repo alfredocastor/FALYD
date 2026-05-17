@@ -3,6 +3,8 @@
 <%@page import="com.falyd.modelo.Alumno"%>
 <%@page import="com.falyd.dao.AlumnoDAO"%>
 <%@page import="java.util.List"%>
+<%@page import="com.falyd.modelo.Entrega"%>
+<%@page import="com.falyd.dao.EntregaDAO"%>
 <%@page import="com.falyd.modelo.Usuario"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
@@ -67,40 +69,103 @@
                 </div>
             </div>
 
-            <form action="CalificacionServlet" method="POST">
+           <form action="CalificacionServlet" method="POST">
                 <input type="hidden" name="accion" value="registrar">
                 
                 <h5 class="fw-bold border-bottom pb-2 mb-4">Datos de Evaluación</h5>
-                <div class="row g-4 mb-5">
+                
+                <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label class="form-label fw-bold small">Selecciona la Tarea / Actividad <span class="text-danger">*</span></label>
-                        <select name="id_tarea" class="form-select" required>
+                        <select name="id_tarea" id="selectTarea" class="form-select" required onchange="actualizarEvidencia()">
                             <option value="" selected disabled>Elige la tarea a calificar...</option>
                             <%
+                                // Variables obtenidas de la URL si la página se recargó
+                                String tParam = request.getParameter("id_tarea");
+                                String aParam = request.getParameter("id_alumno");
+                                int idTareaActiva = (tParam != null && !tParam.isEmpty()) ? Integer.parseInt(tParam) : 0;
+                                int idAlumnoACalificar = (aParam != null && !aParam.isEmpty()) ? Integer.parseInt(aParam) : 0;
+
                                 TareaDAO tDAO = new TareaDAO();
                                 List<Tarea> listaTareas = tDAO.listarTareasPorMaestro(user.getId_usuario());
                                 for(Tarea t : listaTareas) {
+                                    String selectedT = (t.getId_tarea() == idTareaActiva) ? "selected" : "";
                             %>
-                                <option value="<%= t.getId_tarea() %>"><%= t.getNombre_materia() %> - <%= t.getTitulo() %></option>
+                                <option value="<%= t.getId_tarea() %>" <%= selectedT %>><%= t.getNombre_materia() %> - <%= t.getTitulo() %></option>
                             <% } %>
                         </select>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold small">Selecciona al Alumno <span class="text-danger">*</span></label>
-                        <select name="id_alumno" class="form-select" required>
-                            <option value="" selected disabled>Elige al alumno...</option>
+                        <select name="id_alumno" id="selectAlumno" class="form-select" required onchange="actualizarEvidencia()">
+                            <option value="" selected disabled>Elige al estudiante...</option>
                             <%
                                 AlumnoDAO aDAO = new AlumnoDAO();
-                                List<Alumno> listaAlumnos = aDAO.listarAlumnos();
+                                // Traemos todos los alumnos (puedes ajustar el método según tu DAO)
+                                List<Alumno> listaAlumnos = aDAO.listarAlumnos(); 
                                 for(Alumno a : listaAlumnos) {
+                                    String selectedA = (a.getId_alumno() == idAlumnoACalificar) ? "selected" : "";
                             %>
-                                <option value="<%= a.getId_alumno() %>"><%= String.format("%05d", a.getId_alumno()) %> - <%= a.getNombre() %></option>
+                                <option value="<%= a.getId_alumno() %>" <%= selectedA %>><%= a.getNombre() %></option>
                             <% } %>
                         </select>
                     </div>
                 </div>
 
+                <%
+                    if (idTareaActiva > 0 && idAlumnoACalificar > 0) {
+                        EntregaDAO entregaDAO = new EntregaDAO();
+                        Entrega tareaEnviada = entregaDAO.obtenerEntregaPorTareaYAlumno(idTareaActiva, idAlumnoACalificar);
+                %>
+                <div class="card p-4 border-0 shadow-sm rounded-4 mb-4 bg-white" style="border: 1px solid var(--border-color) !important;">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i>Evidencia de entrega</h5>
+                    
+                    <% if (tareaEnviada == null) { %>
+                        <div class="alert alert-warning border-0 rounded-3 m-0 small d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill fs-5 me-3"></i>
+                            <div>
+                                <strong class="d-block">Sin entrega pendiente</strong>
+                                El estudiante aún no ha subido ningún archivo para esta actividad.
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="p-3 bg-light rounded-3 border mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success rounded-pill px-3 py-1 text-white small">Archivo Recibido</span>
+                                <span class="text-muted small fw-bold"><i class="bi bi-clock me-1"></i><%= tareaEnviada.getFecha_envio() %></span>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded-3 border d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3 fs-2 text-danger"><i class="bi bi-file-earmark-pdf-fill"></i></div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-dark text-truncate" style="max-width: 280px;">Documento de Evidencia</h6>
+                                        <p class="text-muted small mb-0">Listo para evaluar</p>
+                                    </div>
+                                </div>
+                                <a href="<%= tareaEnviada.getArchivo_url() %>" target="_blank" class="btn btn-sm fw-bold px-3 py-2 rounded-3 text-white" style="background-color: var(--blue-falyd);">
+                                    <i class="bi bi-download me-2"></i>Descargar
+                                </a>
+                            </div>
+                        </div>
+
+                        <% if (tareaEnviada.getComentario_alumno() != null && !tareaEnviada.getComentario_alumno().trim().isEmpty()) { %>
+                            <div class="mb-2">
+                                <label class="fw-bold small text-muted mb-1">Nota adjunta del alumno:</label>
+                                <p class="text-muted small bg-light p-3 rounded-3 border m-0" style="font-style: italic;">
+                                    "<%= tareaEnviada.getComentario_alumno() %>"
+                                </p>
+                            </div>
+                        <% } %>
+                    <% } %>
+                </div>
+                <% } else { %>
+                    <div class="text-center text-muted p-4 mb-4 border rounded-4 bg-light">
+                        <i class="bi bi-hand-index-thumb fs-3"></i>
+                        <p class="mt-2 small mb-0">Selecciona una tarea y un alumno para verificar si existe un archivo entregado.</p>
+                    </div>
+                <% } %>
                 <h5 class="fw-bold border-bottom pb-2 mb-4">Calificación</h5>
                 <div class="row g-4 mb-4 align-items-center justify-content-center">
                     <div class="col-md-4 text-center">
@@ -114,6 +179,17 @@
                     <button type="submit" class="btn-submit"><i class="bi bi-save me-2"></i>Guardar Calificación</button>
                 </div>
             </form>
+
+            <script>
+                function actualizarEvidencia() {
+                    var tarea = document.getElementById("selectTarea").value;
+                    var alumno = document.getElementById("selectAlumno").value;
+                    if (tarea && alumno) {
+                        // Recarga la página enviando los IDs por la URL para que Java los lea
+                        window.location.href = "?id_tarea=" + tarea + "&id_alumno=" + alumno;
+                    }
+                }
+            </script>
         </div>
     </div>
 </body>

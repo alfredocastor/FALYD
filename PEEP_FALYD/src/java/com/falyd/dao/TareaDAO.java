@@ -160,6 +160,7 @@ public class TareaDAO {
         }
         return actualizado;
     }
+    
     // Listar todas las tareas asignadas en el sistema junto con el nombre de su materia
     public List<Tarea> listarTareasParaAlumno() {
         List<Tarea> lista = new ArrayList<>();
@@ -187,6 +188,44 @@ public class TareaDAO {
             }
         } catch (Exception e) {
             System.out.println("Error al listar tareas para alumno: " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return lista;
+    }
+    
+    // Listar tareas pendientes (excluyendo las que el alumno ya tiene calificadas)
+    public List<Tarea> listarTareasPendientesPorAlumno(int idAlumno) {
+        List<Tarea> lista = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            // LEFT JOIN para buscar si ya existe una calificación. Si c.id_calificacion es NULL, significa que no está calificada.
+            String sql = "SELECT t.*, m.nombre_materia FROM TAREA t " +
+                         "INNER JOIN MATERIA m ON t.id_materia = m.id_materia " +
+                         "LEFT JOIN CALIFICACION c ON t.id_tarea = c.id_tarea AND c.id_alumno = ? " +
+                         "WHERE c.id_calificacion IS NULL " +
+                         "ORDER BY t.fecha_entrega ASC";
+            
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idAlumno);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Tarea t = new Tarea();
+                t.setId_tarea(rs.getInt("id_tarea"));
+                t.setTitulo(rs.getString("titulo"));
+                t.setDescripcion(rs.getString("descripcion"));
+                t.setFecha_entrega(rs.getString("fecha_entrega"));
+                t.setId_materia(rs.getInt("id_materia"));
+                t.setNombre_materia(rs.getString("nombre_materia"));
+                lista.add(t);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar tareas pendientes por alumno: " + e.getMessage());
         } finally {
             try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
         }

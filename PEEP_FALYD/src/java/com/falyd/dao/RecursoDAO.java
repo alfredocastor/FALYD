@@ -80,4 +80,39 @@ public class RecursoDAO {
         }
         return lista;
     }
+    // Listar todos los recursos para el panel del alumno
+    public List<Recurso> listarRecursosParaAlumno() {
+        List<Recurso> lista = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            // Traemos el recurso y el nombre de su materia
+            String sql = "SELECT r.*, m.nombre_materia FROM RECURSO r " +
+                         "LEFT JOIN MATERIA m ON r.id_materia = m.id_materia " +
+                         "ORDER BY r.fecha_publicacion DESC";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Recurso r = new Recurso();
+                r.setId_recurso(rs.getInt("id_recurso"));
+                r.setTitulo(rs.getString("titulo"));
+                r.setDescripcion(rs.getString("descripcion"));
+                r.setTipo_recurso(rs.getString("tipo_recurso"));
+                r.setUrl_recurso(rs.getString("url_recurso"));
+                r.setFecha_publicacion(rs.getString("fecha_publicacion"));
+                r.setId_materia(rs.getInt("id_materia"));
+                r.setNombre_materia(rs.getString("nombre_materia") != null ? rs.getString("nombre_materia") : "General");
+                lista.add(r);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar recursos para alumno: " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return lista;
+    }
 }

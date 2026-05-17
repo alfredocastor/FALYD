@@ -14,6 +14,7 @@ public class Materia {
     private int id_maestro;
     
     private String nombre_maestro; 
+    private double promedio;
 
     public Materia() {
     }
@@ -29,4 +30,7 @@ public class Materia {
 
     public String getNombre_maestro() { return nombre_maestro; }
     public void setNombre_maestro(String nombre_maestro) { this.nombre_maestro = nombre_maestro; }
+    
+    public double getPromedio() { return promedio; }
+    public void setPromedio(double promedio) { this.promedio = promedio; }
 }

@@ -1,3 +1,5 @@
+<%@page import="com.falyd.modelo.Tarea"%>
+<%@page import="com.falyd.dao.TareaDAO"%>
 <%@page import="com.falyd.modelo.Materia"%>
 <%@page import="com.falyd.dao.MateriaDAO"%>
 <%@page import="com.falyd.modelo.Alumno"%>
@@ -22,6 +24,9 @@
     // 2. Cargar las clases reales de la Base de Datos
     MateriaDAO mDAO = new MateriaDAO();
     List<Materia> listaMaterias = mDAO.listarMateriasGenerales();
+    
+    TareaDAO tDAO = new TareaDAO();
+List<Tarea> misTareas = tDAO.listarTareasPendientesPorAlumno(miPerfil.getId_alumno());
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -71,11 +76,11 @@
             <a class="nav-link" href="panel_alumno.jsp"><i class="bi bi-house-door-fill"></i> Inicio</a>
             <a class="nav-link active" href="alumno_clases.jsp"><i class="bi bi-book-half"></i> Mis clases</a>
             <a class="nav-link" href="alumno_tareas.jsp"><i class="bi bi-check2-square"></i> Tareas</a>
-            <a class="nav-link" href="#"><i class="bi bi-calendar3"></i> Calendario</a>
-            <a class="nav-link" href="#"><i class="bi bi-folder2-open"></i> Recursos</a>
-            <a class="nav-link" href="#"><i class="bi bi-bar-chart-fill"></i> Calificaciones</a>
+            <a class="nav-link" href="alumno_calendario.jsp"><i class="bi bi-calendar3"></i> Calendario</a>
+            <a class="nav-link" href="alumno_recursos.jsp"><i class="bi bi-folder2-open"></i> Recursos</a>
+            <a class="nav-link" href="alumno_calificaciones.jsp"><i class="bi bi-bar-chart-fill"></i> Calificaciones</a>
             <div class="mt-auto mb-4">
-                <a class="nav-link text-danger" href="LogoutServlet"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+<a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>            </div>
             </div>
         </nav>
     </div>
@@ -86,7 +91,31 @@
                 <h4 class="fw-bold mb-0" style="color: var(--blue-falyd);">Sistema Web Escolar</h4>
                 <p class="text-muted small mb-0">Panel del Alumno</p>
             </div>
-        </div>
+             <div class="d-flex align-items-center bg-white p-2 rounded-pill shadow-sm border">
+                <div class="dropdown">
+                    <button class="btn btn-link text-muted p-0 me-3 position-relative" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell-fill fs-5"></i>
+                        <% if(!misTareas.isEmpty()) { %>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 0.65rem; padding: 4px 6px;">
+                                <%= misTareas.size() %>
+                            </span>
+                        <% } %>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="width: 320px; border-radius: 15px; margin-top: 15px;">
+                        <li><h6 class="dropdown-header fw-bold text-dark fs-6 border-bottom pb-2">Notificaciones</h6></li>
+                        <% if(misTareas.isEmpty()) { %>
+                            <li><a class="dropdown-item py-3 small text-wrap text-muted text-center" href="#">No tienes tareas nuevas.</a></li>
+                        <% } else { %>
+                            <li><a class="dropdown-item py-3 small text-wrap text-muted" href="#"><i class="bi bi-journal-text me-2 text-primary"></i>Tienes <%= misTareas.size() %> tareas pendientes de entrega.</a></li>
+                        <% } %>
+                    </ul>
+                </div>
+                <img src="https://ui-avatars.com/api/?name=<%= user.getNombre() %>&background=e3f2fd&color=0b3b60" class="rounded-circle me-2" width="40">
+                <div class="me-2 lh-sm">
+                    <p class="mb-0 fw-bold small"><%= user.getNombre() %></p>
+                </div>
+            </div>
+            </div>
 
         <div class="mb-4">
             <h1 class="fw-bold mb-1">Mis clases</h1>
@@ -172,7 +201,25 @@
             %>
         </div>
     </div>
-
+<div class="modal fade" id="modalCerrarSesion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+                <div class="modal-body text-center p-4">
+                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 75px; height: 75px; background-color: #fee2e2; border-radius: 50%; color: #ef4444; font-size: 2.2rem;">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </div>
+                    
+                    <h4 class="fw-bold mb-2" style="color: var(--text-main);">¿Cerrar sesión?</h4>
+                    <p class="text-muted small mb-4 px-2">Estás a punto de cerrar sesión en el sistema. Tendrás que ingresar tus credenciales nuevamente para acceder.</p>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="button" class="btn fw-bold px-4 py-2 flex-grow-1" data-bs-dismiss="modal" style="border: 1px solid var(--border-color); color: var(--blue-falyd); border-radius: 10px; background: white;">Cancelar</button>
+                        <a href="LogoutServlet" class="btn btn-danger fw-bold px-4 py-2 flex-grow-1" style="border-radius: 10px; background-color: #e53e3e; border: none;">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
