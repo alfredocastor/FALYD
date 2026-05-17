@@ -66,7 +66,10 @@
             <a class="nav-link" href="maestro_calendario.jsp"><i class="bi bi-calendar3"></i> Calendario</a>
             <a class="nav-link" href="maestro_alumnos.jsp"><i class="bi bi-people-fill"></i> Alumnos</a>
             <a class="nav-link active" href="maestro_calificaciones.jsp"><i class="bi bi-clipboard-data"></i> Calificaciones</a>
-            <a class="nav-link" href="#"><i class="bi bi-book"></i> Recursos</a>
+            <a class="nav-link" href="maestro_recursos.jsp"><i class="bi bi-book"></i> Recursos</a>
+             <div class="mt-auto mb-4">
+                <a class="nav-link text-danger" href="LogoutServlet"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+            </div>
         </nav>
     </div>
 
@@ -76,6 +79,23 @@
                 <h4 class="fw-bold mb-0" style="color: var(--blue-falyd);">Sistema Web Escolar</h4>
                 <h5 class="fw-bold mb-0" style="color: var(--red-falyd);">Luis Moya</h5>
                 <p class="text-muted small mb-0">Panel del Maestro</p>
+            </div>
+            <div class="d-flex align-items-center bg-white p-2 rounded-pill shadow-sm">
+                 <div class="dropdown">
+                    <button class="btn btn-link text-muted p-0 me-3 position-relative" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell-fill fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="width: 320px; border-radius: 15px; margin-top: 15px;">
+                        <li><h6 class="dropdown-header fw-bold text-dark fs-6 border-bottom pb-2">Notificaciones</h6></li>
+                        <li><a class="dropdown-item py-3 border-bottom small text-wrap" href="maestro_calificaciones.jsp"><i class="bi bi-info-circle-fill text-primary me-2"></i>Recuerda calificar las tareas.</a></li>
+                    </ul>
+                </div>
+                <img src="https://ui-avatars.com/api/?name=<%= user.getNombre() %>&background=e3f2fd&color=0b3b60" class="rounded-circle me-2" width="40">
+                <div class="me-3 lh-sm">
+                    <p class="mb-0 fw-bold small"><%= user.getNombre() %></p>
+                    <p class="mb-0 text-muted" style="font-size: 0.75rem;">Maestro</p>
+                </div>
             </div>
         </div>
 
@@ -237,6 +257,7 @@
             </div>
         </div>
     </div>
+                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         const ctx = document.getElementById('graficaPastel').getContext('2d');

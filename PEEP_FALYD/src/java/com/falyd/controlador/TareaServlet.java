@@ -42,5 +42,25 @@ public class TareaServlet extends HttpServlet {
                 response.sendRedirect("maestro_crear_tarea.jsp?msg=error");
             }
         }
+        else if ("eliminar".equals(accion)) {
+            int id_tarea = Integer.parseInt(request.getParameter("id_tarea"));
+            if (dao.eliminarTarea(id_tarea)) {
+                response.sendRedirect("maestro_tareas.jsp?msg=eliminado");
+            } else {
+                response.sendRedirect("maestro_tareas.jsp?msg=error_eliminar");
+            }
+        }else if ("editar".equals(accion)) {
+            int id_tarea = Integer.parseInt(request.getParameter("id_tarea"));
+            String titulo = request.getParameter("titulo");
+            String descripcion = request.getParameter("descripcion");
+            String fecha_entrega = request.getParameter("fecha_entrega");
+            int id_materia = Integer.parseInt(request.getParameter("id_materia"));
+
+            if (dao.actualizarTarea(id_tarea, titulo, descripcion, fecha_entrega, id_materia)) {
+                response.sendRedirect("maestro_tareas.jsp?msg=actualizado");
+            } else {
+                response.sendRedirect("maestro_editar_tarea.jsp?id_tarea=" + id_tarea + "&msg=error");
+            }
+        }
     }
 }

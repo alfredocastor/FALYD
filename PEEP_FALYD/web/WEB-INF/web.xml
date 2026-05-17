@@ -20,6 +20,18 @@
         <servlet-name>TareaServlet</servlet-name>
         <servlet-class>com.falyd.controlador.TareaServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>RecursoServlet</servlet-name>
+        <servlet-class>com.falyd.controlador.RecursoServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EventoServlet</servlet-name>
+        <servlet-class>com.falyd.controlador.EventoServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>MensajeServlet</servlet-name>
+        <servlet-class>com.falyd.controlador.MensajeServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AlumnoServlet</servlet-name>
         <url-pattern>/AlumnoServlet</url-pattern>
@@ -39,6 +51,18 @@
     <servlet-mapping>
         <servlet-name>TareaServlet</servlet-name>
         <url-pattern>/TareaServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RecursoServlet</servlet-name>
+        <url-pattern>/RecursoServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EventoServlet</servlet-name>
+        <url-pattern>/EventoServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MensajeServlet</servlet-name>
+        <url-pattern>/MensajeServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

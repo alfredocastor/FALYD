@@ -44,7 +44,10 @@
             <a class="nav-link" href="maestro_calendario.jsp"><i class="bi bi-calendar3 me-2"></i> Calendario</a>
             <a class="nav-link" href="maestro_alumnos.jsp"><i class="bi bi-people-fill me-2"></i> Alumnos</a>
             <a class="nav-link active" href="maestro_calificaciones.jsp"><i class="bi bi-clipboard-data me-2"></i> Calificaciones</a>
-            <a class="nav-link" href="#"><i class="bi bi-book me-2"></i> Recursos</a>
+            <a class="nav-link" href="maestro_recursos.jsp"><i class="bi bi-book me-2"></i> Recursos</a>
+             <div class="mt-auto mb-4">
+                <a class="nav-link text-danger" href="LogoutServlet"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+            </div>
         </nav>
     </div>
 

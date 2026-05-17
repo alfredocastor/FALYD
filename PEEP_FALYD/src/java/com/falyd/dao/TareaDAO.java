@@ -82,4 +82,82 @@ public class TareaDAO {
         }
         return lista;
     }
+    // Método para ELIMINAR una tarea
+    public boolean eliminarTarea(int idTarea) {
+        boolean eliminado = false;
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            con = Conexion.getConexion();
+            String sql = "DELETE FROM TAREA WHERE id_tarea = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idTarea);
+
+            if (ps.executeUpdate() > 0) {
+                eliminado = true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error al eliminar tarea: " + e.getMessage());
+        } finally {
+            try { if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return eliminado;
+    }
+    // 1. Obtener una sola tarea para mostrarla en el formulario de edición
+    public Tarea obtenerTarea(int idTarea) {
+        Tarea t = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            String sql = "SELECT * FROM TAREA WHERE id_tarea = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idTarea);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                t = new Tarea();
+                t.setId_tarea(rs.getInt("id_tarea"));
+                t.setTitulo(rs.getString("titulo"));
+                t.setDescripcion(rs.getString("descripcion"));
+                t.setFecha_entrega(rs.getString("fecha_entrega"));
+                t.setId_materia(rs.getInt("id_materia"));
+            }
+        } catch (Exception e) {
+            System.out.println("Error al obtener tarea: " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return t;
+    }
+
+    // 2. Actualizar los datos de la tarea en la base de datos
+    public boolean actualizarTarea(int idTarea, String titulo, String descripcion, String fecha_entrega, int idMateria) {
+        boolean actualizado = false;
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            con = Conexion.getConexion();
+            String sql = "UPDATE TAREA SET titulo = ?, descripcion = ?, fecha_entrega = ?, id_materia = ? WHERE id_tarea = ?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, titulo);
+            ps.setString(2, descripcion);
+            ps.setString(3, fecha_entrega);
+            ps.setInt(4, idMateria);
+            ps.setInt(5, idTarea);
+
+            if (ps.executeUpdate() > 0) {
+                actualizado = true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error al actualizar tarea: " + e.getMessage());
+        } finally {
+            try { if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return actualizado;
+    }
 }
