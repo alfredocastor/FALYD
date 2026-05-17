@@ -195,4 +195,36 @@ public class MateriaDAO {
         }
         return lista;
     }
+    // Listar todas las materias para el panel del alumno
+    public List<Materia> listarMateriasGenerales() {
+        List<Materia> lista = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            // Traemos la materia y el nombre del maestro que la imparte
+            String sql = "SELECT m.id_materia, m.nombre_materia, u.nombre AS nombre_maestro " +
+                         "FROM MATERIA m " +
+                         "LEFT JOIN MAESTRO mae ON m.id_maestro = mae.id_maestro " +
+                         "LEFT JOIN USUARIO u ON mae.id_usuario = u.id_usuario";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Materia m = new Materia();
+                m.setId_materia(rs.getInt("id_materia"));
+                m.setNombre_materia(rs.getString("nombre_materia"));
+                // Usamos descripcion temporalmente para guardar el nombre del maestro en la vista
+                m.setNombre_maestro(rs.getString("nombre_maestro") != null ? "Prof. " + rs.getString("nombre_maestro") : "Sin profesor asignado");
+                lista.add(m);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar materias: " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return lista;
+    }
 }

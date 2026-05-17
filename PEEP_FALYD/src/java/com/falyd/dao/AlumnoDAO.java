@@ -217,4 +217,37 @@ public class AlumnoDAO {
         }
         return eliminado;
     }
+    // Obtener los datos del alumno (y su grupo) usando su id_usuario
+    public Alumno obtenerAlumnoPorUsuario(int idUsuario) {
+        Alumno a = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            // Hacemos un JOIN con GRUPO para traer también el nombre del grupo (Ej: "3º A")
+            String sql = "SELECT a.*, g.nombre_grupo FROM ALUMNO a " +
+                         "LEFT JOIN GRUPO g ON a.id_grupo = g.id_grupo " +
+                         "WHERE a.id_usuario = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idUsuario);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                a = new Alumno();
+                a.setId_alumno(rs.getInt("id_alumno"));
+                a.setId_usuario(rs.getInt("id_usuario"));
+                a.setId_grupo(rs.getInt("id_grupo"));
+                // Guardamos el nombre del grupo temporalmente en un atributo auxiliar si lo tienes, 
+                // o lo usamos directo. Asumo que le pondrás un setGrupo a tu modelo Alumno.
+                a.setGrupo(rs.getString("nombre_grupo")); 
+            }
+        } catch (Exception e) {
+            System.out.println("Error al obtener alumno por usuario: " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return a;
+    }
 }

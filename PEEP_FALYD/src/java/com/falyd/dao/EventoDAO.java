@@ -97,4 +97,41 @@ public class EventoDAO {
         }
         return lista;
     }
+    // Listar todos los eventos para el panel del alumno
+    public List<Evento> listarEventosGenerales() {
+        List<Evento> lista = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            String sql = "SELECT e.*, m.nombre_materia FROM EVENTO e " +
+                         "LEFT JOIN MATERIA m ON e.id_materia = m.id_materia " +
+                         "ORDER BY e.fecha_inicio ASC, e.hora_inicio ASC";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Evento ev = new Evento();
+                ev.setId_evento(rs.getInt("id_evento"));
+                ev.setTitulo(rs.getString("titulo"));
+                ev.setTipo_evento(rs.getString("tipo_evento"));
+                ev.setColor(rs.getString("color"));
+                ev.setFecha_inicio(rs.getString("fecha_inicio"));
+                
+                String hi = rs.getString("hora_inicio");
+                ev.setHora_inicio(hi != null ? hi.substring(0, 5) : "");
+                
+                ev.setTodo_el_dia(rs.getBoolean("todo_el_dia"));
+                ev.setNombre_materia(rs.getString("nombre_materia") != null ? rs.getString("nombre_materia") : "General");
+                lista.add(ev);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar eventos generales: " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return lista;
+    }
 }

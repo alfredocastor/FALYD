@@ -160,4 +160,36 @@ public class TareaDAO {
         }
         return actualizado;
     }
+    // Listar todas las tareas asignadas en el sistema junto con el nombre de su materia
+    public List<Tarea> listarTareasParaAlumno() {
+        List<Tarea> lista = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            String sql = "SELECT t.*, m.nombre_materia FROM TAREA t " +
+                         "INNER JOIN MATERIA m ON t.id_materia = m.id_materia " +
+                         "ORDER BY t.fecha_entrega ASC";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Tarea t = new Tarea();
+                t.setId_tarea(rs.getInt("id_tarea"));
+                t.setTitulo(rs.getString("titulo"));
+                t.setDescripcion(rs.getString("descripcion"));
+                t.setFecha_entrega(rs.getString("fecha_entrega"));
+                t.setId_materia(rs.getInt("id_materia"));
+                t.setNombre_materia(rs.getString("nombre_materia"));
+                lista.add(t);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar tareas para alumno: " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+        }
+        return lista;
+    }
 }
