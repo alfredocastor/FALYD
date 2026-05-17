@@ -1,6 +1,6 @@
 <%@page import="com.falyd.modelo.Usuario"%>
-<%@page import="com.falyd.modelo.Alumno"%>
-<%@page import="com.falyd.dao.AlumnoDAO"%>
+<%@page import="com.falyd.modelo.Materia"%>
+<%@page import="com.falyd.dao.MateriaDAO"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
@@ -18,7 +18,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Alumnos - Admin FALYD</title>
+    <title>Consulta de Materias - Admin FALYD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
@@ -36,13 +36,10 @@
         .main-content { margin-left: 260px; padding: 30px 40px; }
         .card-custom { background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
         
-        /* Tarjetas de métricas superiores */
-        .metric-card { text-align: center; border: 1px solid var(--border-color); border-radius: 20px; padding: 20px 10px; background: white; transition: 0.2s; height: 100%; }
-        .metric-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
-        .metric-icon-box { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin: 0 auto 10px auto; }
-
         .table th { font-weight: 700; color: #64748b; font-size: 0.85rem; text-transform: uppercase; border-bottom: 2px solid var(--border-color); }
         .table td { color: var(--text-main); font-weight: 600; font-size: 0.95rem; padding: 15px 10px; }
+        
+        .subject-icon-box { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -55,10 +52,10 @@
         </div>
         <nav class="nav flex-column flex-grow-1">
             <a class="nav-link" href="panel_admin.jsp"><i class="bi bi-house-door-fill"></i> Inicio</a>
-            <a class="nav-link active" href="admin_alumnos.jsp"><i class="bi bi-people-fill"></i> Gestión de Alumnos</a>
+            <a class="nav-link" href="admin_alumnos.jsp"><i class="bi bi-people-fill"></i> Gestión de Alumnos</a>
             <a class="nav-link" href="admin_maestros.jsp"><i class="bi bi-person-badge-fill"></i> Gestión de Maestros</a>
             <a class="nav-link" href="admin_secretarias.jsp"><i class="bi bi-person-workspace"></i> Gestión de Secretarías</a>
-            <a class="nav-link" href="admin_materias.jsp"><i class="bi bi-journal-bookmark-fill"></i> Materias</a>
+            <a class="nav-link active" href="admin_materias.jsp"><i class="bi bi-journal-bookmark-fill"></i> Materias</a>
             <a class="nav-link" href="admin_grupos.jsp"><i class="bi bi-diagram-3-fill"></i> Grupos</a>
             <a class="nav-link" href="admin_reportes.jsp"><i class="bi bi-bar-chart-fill"></i> Reportes</a>
             <div class="mt-auto mb-4">
@@ -68,16 +65,11 @@
     </div>
 
     <div class="main-content">
-        <%
-            AlumnoDAO aDAO = new AlumnoDAO();
-            List<Alumno> lista = aDAO.listarAlumnos();
-            int totalEstudiantes = lista.size();
-        %>
         
         <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
-                <h2 class="fw-bold mb-1" style="color: var(--blue-falyd);">Matrícula de Alumnos</h2>
-                <p class="text-muted small mb-0">Consulta del registro oficial de estudiantes inscritos</p>
+                <h2 class="fw-bold mb-1" style="color: var(--blue-falyd);">Consulta de Materias</h2>
+                <p class="text-muted small mb-0">Catálogo global de asignaturas registradas en el sistema</p>
             </div>
             <div class="d-flex align-items-center bg-white p-2 rounded-pill shadow-sm border">
                 <img src="https://ui-avatars.com/api/?name=<%= user.getNombre() %>&background=e3f2fd&color=0b3b60" class="rounded-circle me-2" width="40">
@@ -92,44 +84,13 @@
             <i class="bi bi-info-circle-fill fs-4 me-3"></i>
             <div>
                 <strong class="d-block">Vista de Auditoría (Solo Lectura)</strong>
-                La inscripción de nuevos alumnos, asignación de grupos y edición de información de contacto es gestionada por el departamento de <strong>Secretaría</strong>.
-            </div>
-        </div>
-
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="metric-card border">
-                    <div class="metric-icon-box" style="background-color: #e3f2fd; color: #1e88e5;"><i class="bi bi-people-fill"></i></div>
-                    <p class="text-muted small mb-1 fw-bold">Total de Alumnos</p>
-                    <h3 class="fw-bold text-primary mb-0"><%= totalEstudiantes %></h3>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="metric-card border">
-                    <div class="metric-icon-box" style="background-color: #e8f5e9; color: #43a047;"><i class="bi bi-graph-up-arrow"></i></div>
-                    <p class="text-muted small mb-1 fw-bold">Nuevos este mes</p>
-                    <h3 class="fw-bold text-success mb-0">48</h3>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="metric-card border">
-                    <div class="metric-icon-box" style="background-color: #e3f2fd; color: #0b3b60;"><i class="bi bi-shield-check"></i></div>
-                    <p class="text-muted small mb-1 fw-bold">Alumnos Activos</p>
-                    <h3 class="fw-bold mb-0" style="color: var(--blue-falyd);">94.4%</h3>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="metric-card border">
-                    <div class="metric-icon-box" style="background-color: #ffebee; color: #ef4444;"><i class="bi bi-shield-x"></i></div>
-                    <p class="text-muted small mb-1 fw-bold">Alumnos Inactivos</p>
-                    <h3 class="fw-bold text-danger mb-0">70</h3>
-                </div>
+                De acuerdo al flujo de trabajo, la creación, edición o eliminación de asignaturas corresponde al departamento de <strong>Secretaría</strong>.
             </div>
         </div>
 
         <div class="card-custom">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0"><i class="bi bi-journal-text me-2 text-primary"></i>Padrón de Estudiantes Registrados</h5>
+                <h5 class="fw-bold mb-0"><i class="bi bi-journal-text me-2 text-primary"></i>Plan de Estudios Vigente</h5>
                 <span class="badge bg-secondary-subtle text-secondary border px-3 py-1.5 rounded-pill fw-bold small">Modo de consulta</span>
             </div>
             
@@ -137,39 +98,44 @@
                 <table class="table table-hover align-middle">
                     <thead>
                         <tr>
-                            <th style="width: 120px;">ID Alumno</th>
-                            <th>Nombre Completo</th>
-                            <th>Grupo Asignado</th>
+                            <th style="width: 120px;">Código</th>
+                            <th>Nombre de la Materia</th>
+                            <th>Nivel / Grado</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody>
                         <%
-                            if (lista.isEmpty()) {
+                            MateriaDAO mDAO = new MateriaDAO();
+                            List<Materia> listaMaterias = mDAO.listarMateriasGenerales();
+                            
+                            if(listaMaterias.isEmpty()){
                         %>
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted fw-bold">No hay alumnos registrados en el sistema.</td>
+                                <td colspan="4" class="text-center py-4 text-muted fw-bold">No hay materias dadas de alta en el sistema todavía.</td>
                             </tr>
                         <%
                             } else {
-                                for (Alumno al : lista) {
+                                String[] coloresIcono = {"#0d47a1", "#10b981", "#8b5cf6", "#f59e0b"};
+                                int index = 0;
+                                for (Materia mat : listaMaterias) {
+                                    String colorActual = coloresIcono[index % coloresIcono.length];
                         %>
                         <tr>
-                            <td><strong>#<%= al.getId_alumno() %></strong></td>
+                            <td><span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">MAT-0<%= index + 1 %></span></td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <img src="https://ui-avatars.com/api/?name=<%= al.getNombre() %>&background=e3f2fd&color=0b3b60" class="rounded-circle me-2" width="32">
-                                    <span class="text-dark fw-bold"><%= al.getNombre() %></span>
+                                    <div class="subject-icon-box me-3" style="background-color: <%= colorActual %>;">
+                                        <i class="bi bi-book-half"></i>
+                                    </div>
+                                    <span class="text-dark fw-bold"><%= mat.getNombre_materia() %></span>
                                 </div>
                             </td>
-                            <td>
-                                <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">
-                                    <i class="bi bi-diagram-3 me-1 text-muted"></i><%= (al.getGrupo() != null) ? al.getGrupo() : "Sin grupo" %>
-                                </span>
-                            </td>
-                            <td><span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5">Activo</span></td>
+                            <td class="text-muted"><%= (mat.getNombre_maestro() != null) ? "Asignada" : "Sin asignar" %></td>
+                            <td><span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5">Activa</span></td>
                         </tr>
                         <% 
+                                    index++;
                                 } 
                             } 
                         %>
