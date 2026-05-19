@@ -23,8 +23,8 @@
 
     // 2. Cargar las clases reales de la Base de Datos
     MateriaDAO mDAO = new MateriaDAO();
-    List<Materia> listaMaterias = mDAO.listarMateriasGenerales();
-    
+List<Materia> listaMaterias = mDAO.listarMateriasPorGrupo(miPerfil.getId_grupo());
+
     TareaDAO tDAO = new TareaDAO();
 List<Tarea> misTareas = tDAO.listarTareasPendientesPorAlumno(miPerfil.getId_alumno());
 %>

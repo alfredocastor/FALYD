@@ -51,6 +51,13 @@ public class MaestroServlet extends HttpServlet {
             String cor = request.getParameter("correo");
             String pas = request.getParameter("password");
 
+            if (pas != null && !pas.trim().isEmpty()) {
+                if (pas.length() < 6) {
+                    response.sendRedirect("admin_maestros.jsp?error=password_corta");
+                    return; // Detiene la ejecución aquí
+                }
+            }
+            
             MaestroDAO dao = new MaestroDAO();
             if (dao.editarMaestro(id_u, id_m, nom, cor, pas)) {
                 response.sendRedirect("panel_admin.jsp?msg=editado");

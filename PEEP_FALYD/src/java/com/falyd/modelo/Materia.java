@@ -15,6 +15,7 @@ public class Materia {
     
     private String nombre_maestro; 
     private double promedio;
+    private int id_grupo;
 
     public Materia() {
     }
@@ -33,4 +34,12 @@ public class Materia {
     
     public double getPromedio() { return promedio; }
     public void setPromedio(double promedio) { this.promedio = promedio; }
+    
+    public int getId_grupo() {
+        return id_grupo;
+    }
+
+    public void setId_grupo(int id_grupo) {
+        this.id_grupo = id_grupo;
+    }
 }

@@ -157,7 +157,8 @@
                 <a class="nav-link" href="maestro_calificaciones.jsp"><i class="bi bi-clipboard-data"></i> Calificaciones</a>
                 <a class="nav-link" href="maestro_recursos.jsp"><i class="bi bi-book"></i> Recursos</a>
                 <div class="mt-auto mb-4">
-<a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>                </div>
+                    <a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+                </div>
             </nav>
         </div>
 
@@ -201,9 +202,17 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <button class="btn btn-white border w-100 rounded-3 text-muted fw-bold d-flex justify-content-between align-items-center">
-                        Todos los grupos <i class="bi bi-chevron-down"></i>
-                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-white border w-100 rounded-3 text-muted fw-bold d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" id="btnFiltroGrupo">
+                            Todos los grupos <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <ul class="dropdown-menu w-100 shadow-sm border-0" style="border-radius: 12px;">
+                            <li><a class="dropdown-item filtro-grupo" href="#" data-grupo="Todos">Todos los grupos</a></li>
+                            <li><a class="dropdown-item filtro-grupo" href="#" data-grupo="1º A">Grupo 1º A</a></li>
+                            <li><a class="dropdown-item filtro-grupo" href="#" data-grupo="2º B">Grupo 2º B</a></li>
+                            <li><a class="dropdown-item filtro-grupo" href="#" data-grupo="Sin asignar">Sin asignar</a></li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-white border w-100 rounded-3 text-muted fw-bold d-flex justify-content-center align-items-center">
@@ -282,57 +291,85 @@
             </div>
 
         </div>
-                        <div class="modal fade" id="modalCerrarSesion" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
-            <div class="modal-content border-0 shadow" style="border-radius: 20px;">
-                <div class="modal-body text-center p-4">
-                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 75px; height: 75px; background-color: #fee2e2; border-radius: 50%; color: #ef4444; font-size: 2.2rem;">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </div>
-                    
-                    <h4 class="fw-bold mb-2" style="color: var(--text-main);">¿Cerrar sesión?</h4>
-                    <p class="text-muted small mb-4 px-2">Estás a punto de cerrar sesión en el sistema. Tendrás que ingresar tus credenciales nuevamente para acceder.</p>
-                    
-                    <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn fw-bold px-4 py-2 flex-grow-1" data-bs-dismiss="modal" style="border: 1px solid var(--border-color); color: var(--blue-falyd); border-radius: 10px; background: white;">Cancelar</button>
-                        <a href="LogoutServlet" class="btn btn-danger fw-bold px-4 py-2 flex-grow-1" style="border-radius: 10px; background-color: #e53e3e; border: none;">Cerrar sesión</a>
+        <div class="modal fade" id="modalCerrarSesion" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+                <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+                    <div class="modal-body text-center p-4">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 75px; height: 75px; background-color: #fee2e2; border-radius: 50%; color: #ef4444; font-size: 2.2rem;">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </div>
+
+                        <h4 class="fw-bold mb-2" style="color: var(--text-main);">¿Cerrar sesión?</h4>
+                        <p class="text-muted small mb-4 px-2">Estás a punto de cerrar sesión en el sistema. Tendrás que ingresar tus credenciales nuevamente para acceder.</p>
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <button type="button" class="btn fw-bold px-4 py-2 flex-grow-1" data-bs-dismiss="modal" style="border: 1px solid var(--border-color); color: var(--blue-falyd); border-radius: 10px; background: white;">Cancelar</button>
+                            <a href="LogoutServlet" class="btn btn-danger fw-bold px-4 py-2 flex-grow-1" style="border-radius: 10px; background-color: #e53e3e; border: none;">Cerrar sesión</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
-            // Script universal para dar vida a los buscadores de FALYD
             document.addEventListener("DOMContentLoaded", function () {
-                // Buscamos el input de texto (la barra de búsqueda)
+                // Atrapamos los elementos
                 const searchInput = document.querySelector('input[type="text"][placeholder*="Buscar"]');
+                const filasTabla = document.querySelectorAll('table tbody tr');
+                const itemsFiltro = document.querySelectorAll('.filtro-grupo');
+                const btnFiltroGrupo = document.getElementById('btnFiltroGrupo');
+                
+                let grupoActual = "Todos"; // Filtro por defecto
 
-                if (searchInput) {
-                    searchInput.addEventListener('input', function (e) {
-                        const termino = e.target.value.toLowerCase();
+                // Función maestra para ocultar/mostrar filas
+                function aplicarFiltros() {
+                    const terminoBusqueda = searchInput ? searchInput.value.toLowerCase() : "";
 
-                        // Buscamos si hay una tabla (como en Alumnos o Recursos)
-                        const filasTabla = document.querySelectorAll('table tbody tr');
-                        if (filasTabla.length > 0) {
-                            filasTabla.forEach(fila => {
-                                const textoFila = fila.innerText.toLowerCase();
-                                fila.style.display = textoFila.includes(termino) ? '' : 'none';
-                            });
-                        }
+                    filasTabla.forEach(fila => {
+                        // Ignoramos la fila de "No hay alumnos" si existe
+                        if (fila.querySelector('td') && fila.querySelector('td').colSpan > 1) return;
 
-                        // Buscamos si hay tarjetas (como en Tareas)
-                        const tarjetas = document.querySelectorAll('.task-card');
-                        if (tarjetas.length > 0) {
-                            tarjetas.forEach(tarjeta => {
-                                const textoTarjeta = tarjeta.innerText.toLowerCase();
-                                tarjeta.style.display = textoTarjeta.includes(termino) ? 'flex' : 'none';
-                            });
+                        // Obtenemos todo el texto de la fila y el texto específico de la columna "Grupo"
+                        const textoFila = fila.innerText.toLowerCase();
+                        const celdas = fila.querySelectorAll('td');
+                        const textoGrupo = celdas.length > 1 ? celdas[1].innerText.trim() : "";
+
+                        // Verificamos si la fila cumple con las dos condiciones
+                        const cumpleBusqueda = textoFila.includes(terminoBusqueda);
+                        const cumpleGrupo = (grupoActual === "Todos" || textoGrupo === grupoActual);
+
+                        // Si cumple ambas, la mostramos; si no, la ocultamos
+                        if (cumpleBusqueda && cumpleGrupo) {
+                            fila.style.display = '';
+                        } else {
+                            fila.style.display = 'none';
                         }
                     });
                 }
+
+                // 1. Evento para cuando escriben en la barra de búsqueda
+                if (searchInput) {
+                    searchInput.addEventListener('input', aplicarFiltros);
+                }
+
+                // 2. Evento para cuando dan clic en una opción del menú de Grupos
+                itemsFiltro.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault(); // Evita que la página salte hacia arriba
+                        
+                        // Guardamos el grupo seleccionado
+                        grupoActual = this.getAttribute('data-grupo');
+                        
+                        // Cambiamos el texto del botón para que el usuario sepa qué seleccionó
+                        btnFiltroGrupo.innerHTML = (grupoActual === "Todos" ? "Todos los grupos" : grupoActual) + ' <i class="bi bi-chevron-down"></i>';
+                        
+                        // Ejecutamos el filtro
+                        aplicarFiltros();
+                    });
+                });
             });
-            
+        </script>
     </body>
 </html>

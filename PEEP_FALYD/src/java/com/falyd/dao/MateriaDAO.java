@@ -19,7 +19,7 @@ import java.util.List;
 public class MateriaDAO {
 
     // Método para REGISTRAR una nueva materia
-    public boolean registrarMateria(String nombre_materia, int id_maestro) {
+    public boolean registrarMateria(String nombre_materia, int id_maestro, int id_grupo) {
         boolean registrado = false;
         Connection con = null;
         PreparedStatement ps = null;
@@ -27,10 +27,11 @@ public class MateriaDAO {
         try {
             con = Conexion.getConexion();
             // Inserción directa basada en tu tabla MATERIA
-            String sql = "INSERT INTO MATERIA (nombre_materia, id_maestro) VALUES (?, ?)";
+            String sql = "INSERT INTO MATERIA (nombre_materia, id_maestro, id_grupo) VALUES (?, ?, ?)";
             ps = con.prepareStatement(sql);
             ps.setString(1, nombre_materia);
             ps.setInt(2, id_maestro);
+            ps.setInt(3, id_grupo);
 
             if (ps.executeUpdate() > 0) {
                 registrado = true;
@@ -129,18 +130,19 @@ public class MateriaDAO {
     }
 // Método para EDITAR una materia
 
-    public boolean editarMateria(int id_materia, String nombre_materia, int id_maestro) {
+    public boolean editarMateria(int id_materia, String nombre_materia, int id_maestro, int id_grupo) {
         boolean editado = false;
         Connection con = null;
         PreparedStatement ps = null;
 
         try {
             con = Conexion.getConexion();
-            String sql = "UPDATE MATERIA SET nombre_materia = ?, id_maestro = ? WHERE id_materia = ?";
+            String sql = "UPDATE MATERIA SET nombre_materia = ?, id_maestro = ?, id_grupo = ? WHERE id_materia = ?";
             ps = con.prepareStatement(sql);
             ps.setString(1, nombre_materia);
             ps.setInt(2, id_maestro);
-            ps.setInt(3, id_materia);
+            ps.setInt(3, id_grupo);
+            ps.setInt(4, id_materia);
 
             if (ps.executeUpdate() > 0) {
                 editado = true;
@@ -160,6 +162,7 @@ public class MateriaDAO {
         }
         return editado;
     }
+
     public List<Materia> listarMateriasPorMaestro(int idUsuario) {
         List<Materia> lista = new ArrayList<>();
         Connection con = null;
@@ -168,11 +171,11 @@ public class MateriaDAO {
 
         try {
             con = Conexion.getConexion();
-            String sql = "SELECT m.id_materia, m.nombre_materia " +
-                         "FROM MATERIA m " +
-                         "INNER JOIN MAESTRO mae ON m.id_maestro = mae.id_maestro " +
-                         "WHERE mae.id_usuario = ?";
-            
+            String sql = "SELECT m.id_materia, m.nombre_materia "
+                    + "FROM MATERIA m "
+                    + "INNER JOIN MAESTRO mae ON m.id_maestro = mae.id_maestro "
+                    + "WHERE mae.id_usuario = ?";
+
             ps = con.prepareStatement(sql);
             ps.setInt(1, idUsuario);
             rs = ps.executeQuery();
@@ -187,14 +190,21 @@ public class MateriaDAO {
             System.out.println("Error al buscar materias del maestro: " + e.getMessage());
         } finally {
             try {
-                if (rs != null) { rs.close(); }
-                if (ps != null) { ps.close(); }
-                if (con != null) { con.close(); }
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
             } catch (Exception e) {
             }
         }
         return lista;
     }
+
     // Listar todas las materias para el panel del alumno
     public List<Materia> listarMateriasGenerales() {
         List<Materia> lista = new ArrayList<>();
@@ -205,10 +215,10 @@ public class MateriaDAO {
         try {
             con = Conexion.getConexion();
             // Traemos la materia y el nombre del maestro que la imparte
-            String sql = "SELECT m.id_materia, m.nombre_materia, u.nombre AS nombre_maestro " +
-                         "FROM MATERIA m " +
-                         "LEFT JOIN MAESTRO mae ON m.id_maestro = mae.id_maestro " +
-                         "LEFT JOIN USUARIO u ON mae.id_usuario = u.id_usuario";
+            String sql = "SELECT m.id_materia, m.nombre_materia, u.nombre AS nombre_maestro "
+                    + "FROM MATERIA m "
+                    + "LEFT JOIN MAESTRO mae ON m.id_maestro = mae.id_maestro "
+                    + "LEFT JOIN USUARIO u ON mae.id_usuario = u.id_usuario";
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
 
@@ -223,7 +233,62 @@ public class MateriaDAO {
         } catch (Exception e) {
             System.out.println("Error al listar materias: " + e.getMessage());
         } finally {
-            try { if (rs != null) rs.close(); if (ps != null) ps.close(); if (con != null) con.close(); } catch (Exception e) {}
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (Exception e) {
+            }
+        }
+        return lista;
+    }
+
+    public List<Materia> listarMateriasPorGrupo(int id_grupo) {
+        List<Materia> lista = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // Hacemos JOIN para traer el nombre del maestro
+        String sql = "SELECT m.id_materia, m.nombre_materia, u.nombre AS nombre_maestro "
+                + "FROM MATERIA m "
+                + "LEFT JOIN MAESTRO mae ON m.id_maestro = mae.id_maestro "
+                + "LEFT JOIN USUARIO u ON mae.id_usuario = u.id_usuario "
+                + "WHERE m.id_grupo = ?";
+        try {
+            con = Conexion.getConexion();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, id_grupo);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Materia m = new Materia();
+                m.setId_materia(rs.getInt("id_materia"));
+                m.setNombre_materia(rs.getString("nombre_materia"));
+                m.setNombre_maestro(rs.getString("nombre_maestro") != null ? "Prof. " + rs.getString("nombre_maestro") : "Sin profesor");
+                lista.add(m);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar por grupo: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (Exception e) {
+            }
+
         }
         return lista;
     }

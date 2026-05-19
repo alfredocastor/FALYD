@@ -21,20 +21,21 @@ public class MateriaServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Soportar acentos en los nombres de las materias
         request.setCharacterEncoding("UTF-8");
-        
+
         String accion = request.getParameter("accion");
 
         if ("agregar".equals(accion)) {
             // 1. Recibir los datos del formulario de Bootstrap
             String nombre_materia = request.getParameter("nombre_materia");
             int id_maestro = Integer.parseInt(request.getParameter("id_maestro"));
+            int id_grupo = Integer.parseInt(request.getParameter("id_grupo"));
 
             // 2. Pasarlos al DAO
             MateriaDAO dao = new MateriaDAO();
-            boolean exito = dao.registrarMateria(nombre_materia, id_maestro);
+            boolean exito = dao.registrarMateria(nombre_materia, id_maestro, id_grupo);
 
             // 3. Responder a la página
             if (exito) {
@@ -42,8 +43,7 @@ public class MateriaServlet extends HttpServlet {
             } else {
                 response.sendRedirect("secretaria_materias.jsp?msg=error");
             }
-        }
-        else if ("eliminar".equals(accion)) {
+        } else if ("eliminar".equals(accion)) {
             // 1. Recibimos el ID de la materia a borrar
             int id_materia = Integer.parseInt(request.getParameter("id_materia"));
 
@@ -57,15 +57,16 @@ public class MateriaServlet extends HttpServlet {
             } else {
                 response.sendRedirect("secretaria_materias.jsp?msg=error");
             }
-        }else if ("editar".equals(accion)) {
+        } else if ("editar".equals(accion)) {
             // 1. Recibimos los datos modificados
             int id_materia = Integer.parseInt(request.getParameter("id_materia"));
             String nombre_materia = request.getParameter("nombre_materia");
             int id_maestro = Integer.parseInt(request.getParameter("id_maestro"));
+            int id_grupo = Integer.parseInt(request.getParameter("id_grupo"));
 
             // 2. Mandamos la orden al DAO
             MateriaDAO dao = new MateriaDAO();
-            boolean exito = dao.editarMateria(id_materia, nombre_materia, id_maestro);
+            boolean exito = dao.editarMateria(id_materia, nombre_materia, id_maestro,id_grupo);
 
             // 3. Recargamos la página
             if (exito) {

@@ -132,6 +132,11 @@
                     <button class="btn btn-primary fw-bold px-4 py-2 me-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevaSecretaria" style="background-color: var(--blue-falyd); border: none; border-radius: 12px;">
                         <i class="bi bi-person-plus-fill me-2"></i>Nueva Secretaria
                     </button>
+                    <% if (request.getParameter("error") != null && request.getParameter("error").equals("password_corta")) { %>
+                    <div class="alert alert-danger py-2 small text-center mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> La nueva contraseña debe tener al menos 6 caracteres.
+                    </div>
+                    <% }%>
                     <div class="d-flex align-items-center bg-white p-2 rounded-pill shadow-sm border">
                         <img src="https://ui-avatars.com/api/?name=<%= user.getNombre()%>&background=e3f2fd&color=0b3b60" class="rounded-circle me-2" width="40">
                         <div class="me-2 lh-sm">

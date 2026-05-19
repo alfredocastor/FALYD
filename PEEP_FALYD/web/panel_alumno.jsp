@@ -59,7 +59,7 @@ LocalDate hoy = LocalDate.now();
 
     // 4. Clases Dinámicas
     MateriaDAO mDAO = new MateriaDAO();
-    List<Materia> misClases = mDAO.listarMateriasGenerales();
+List<Materia> misClases = mDAO.listarMateriasPorGrupo(miPerfil.getId_grupo());
 %>
 <!DOCTYPE html>
 <html lang="es">

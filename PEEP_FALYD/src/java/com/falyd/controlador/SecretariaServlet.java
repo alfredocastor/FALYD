@@ -32,6 +32,13 @@ public class SecretariaServlet extends HttpServlet {
             String correo = request.getParameter("correo");
             String password = request.getParameter("password");
             
+            if (password != null && !password.trim().isEmpty()) {
+                if (password.length() < 6) {
+                    response.sendRedirect("admin_secretarias.jsp?error=password_corta");
+                    return; // Detiene la ejecución aquí
+                }
+            }
+            
             if (dao.agregarSecretaria(nombre, correo, password)) {
                 response.sendRedirect("admin_secretarias.jsp?msg=exito");
             } else {

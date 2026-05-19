@@ -58,6 +58,12 @@ public class AlumnoServlet extends HttpServlet {
             String password = request.getParameter("password");
             int id_grupo = Integer.parseInt(request.getParameter("id_grupo"));
 
+            if (password != null && !password.trim().isEmpty()) {
+                if (password.length() < 6) {
+                    response.sendRedirect("panel_secretaria.jsp?error=password_corta");
+                    return; // Detiene la ejecución aquí
+                }
+            }
             // 2. Mandamos al DAO
             AlumnoDAO dao = new AlumnoDAO();
             boolean exito = dao.editarAlumno(id_usuario, id_alumno, nombre, correo, password, id_grupo);
