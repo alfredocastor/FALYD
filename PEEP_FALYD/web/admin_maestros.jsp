@@ -264,7 +264,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold small text-muted">Contraseña Provisional</label>
-                            <input type="password" class="form-control bg-light border-0 p-2.5" name="password" placeholder="Mínimo 6 caracteres" required style="border-radius: 10px;">
+                            <input type="password" class="form-control bg-light border-0 p-2.5" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required style="border-radius: 10px;">
                         </div>
                     </div>
                     <div class="modal-footer border-0 p-4 pt-0 d-flex gap-2">
