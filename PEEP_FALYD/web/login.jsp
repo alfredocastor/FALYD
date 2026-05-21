@@ -154,9 +154,7 @@
                                     </button>
                                 </div>
 
-                                <div class="text-center mb-3">
-                                    <a href="#" class="text-decoration-none text-muted small">¿Olvidaste tu contraseña?</a>
-                                </div>
+                                
 
                                 <div class="text-center text-muted small mt-4">
                                     <span class="text-falyd-red">|</span> Educamos hoy para un mejor mañana <i class="bi bi-heart-fill text-falyd-red"></i>
